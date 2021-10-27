@@ -1,1 +1,61 @@
 
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Oct 27 14:49:39 2021
+
+@author: Bruger
+"""
+
+
+
+def Print_parameters():
+    print("this is the stof")
+    
+    
+def Quick_setup():
+    
+    
+    Size_world=input("Size of the world: ")
+    
+    Size_pop=input("Size of the populations: ")
+    
+    Size_limit=input("Duration limit: ")
+    
+    sim_mode=input("Simulation mode ")
+
+def Advanced_setup():
+    print("wow")
+
+def Run():
+    print("run run runnnn")
+
+def main_menu():
+    '''
+    The interface for the main menu
+    this function contain 
+
+    Returns
+    -------
+    None.
+
+    '''
+    Action_selectet=input("Input number of choice: ")
+    
+    if Action_selectet=="1": # Display parameters
+        Print_parameters()
+    elif Action_selectet=="2": # Quick setup
+        Quick_setup()
+        main_menu()
+    elif Action_selectet=="3": #Advanced setup
+        print("3")
+    elif Action_selectet=="4": # Run
+        print("4")
+    elif Action_selectet=="5": # Quit
+        print("5")
+    else:
+        main_menu()
+    
+
+
+
+main_menu()
