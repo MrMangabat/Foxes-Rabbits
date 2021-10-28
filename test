@@ -10,16 +10,13 @@ import parameters
 import reporting
 import simulation
 
-
-def Print_parameters():    ## Jannik
-    print("this is the stof")
-    
+def Quick_setup():
     while True:
-        
+            
         Size_world=input("Size of the world: ")
         
         Size_pop=input("Size of the populations: ")
-        
+    
         Size_limit=input("Duration limit: ")
         
         sim_mode=input("Simulation mode ")
@@ -32,10 +29,18 @@ def Print_parameters():    ## Jannik
             a=True
         if sim_mode>0:
             a=True
-            
-            
-        # if a+b+c+d==4:
-        #     break
+                
+                
+            # if a+b+c+d==4:
+            #     break
+
+
+
+
+def Print_parameters():    ## Jannik
+    print("this is the stof")
+    
+    
 
 
 def Advanced_setup(): ## Jannik
