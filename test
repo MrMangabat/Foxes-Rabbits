@@ -6,22 +6,37 @@ Created on Wed Oct 27 14:49:39 2021
 @author: Bruger
 """
 
+import parameters
+import reporting
+import simulation
 
 
 def Print_parameters():    ## Jannik
     print("this is the stof")
     
-    
-def Quick_setup():  ## Simon
-    
-    
-    Size_world=input("Size of the world: ")
-    
-    Size_pop=input("Size of the populations: ")
-    
-    Size_limit=input("Duration limit: ")
-    
-    sim_mode=input("Simulation mode ")
+    while True:
+        
+        Size_world=input("Size of the world: ")
+        
+        Size_pop=input("Size of the populations: ")
+        
+        Size_limit=input("Duration limit: ")
+        
+        sim_mode=input("Simulation mode ")
+        
+        if Size_world>0:
+            a=True
+        if Size_pop>0:
+            a=True
+        if Size_limit>0:
+            a=True
+        if sim_mode>0:
+            a=True
+            
+            
+        # if a+b+c+d==4:
+        #     break
+
 
 def Advanced_setup(): ## Jannik
     print("wow")
