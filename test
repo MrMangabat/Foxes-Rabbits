@@ -75,7 +75,32 @@ def main_menu():
     else:
         main_menu()
     
+def is_int(x):
+    try:
+        int(x)
+        print("Is int or bolean")
+    except Exception:
+        print("The inputtede varible is not a integer: " + str(x))
 
+
+
+def in_Between(x,above=0,below=10**3):
+    
+    print("\nAbove")
+    is_int(above)
+    
+    print("\nbelow")
+    is_int(below)
+    
+    
+    print("\nand")
+    if above < x and below > x:
+        print("Aproved")  ## slettes eller laves om når vi har styr på det hele 
+        
+    else:
+        print("not between: " + str(above) + " and " + str(below))
+    
+    
 
 
 main_menu()
