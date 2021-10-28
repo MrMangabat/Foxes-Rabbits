@@ -1,3 +1,5 @@
+Kanban link : https://github.com/users/MrMangabat/projects/1?fbclid=IwAR3V6I0Y7wZaVuGaoG1wwajS-Pjkzy3kxAsg2KoaGemZ6iUmB87knlE0-hc
+
 # Foxes-Rabbits
 This repository will contain all 3 phases of the programming for our final assestment
 
