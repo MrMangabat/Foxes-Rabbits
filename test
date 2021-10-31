@@ -5,46 +5,52 @@ Created on Wed Oct 27 14:49:39 2021
 
 @author: Bruger
 """
-
+from parameters import Population, Simulation, World
 import parameters
 import reporting
 import simulation
 
-def Quick_setup():
+user_input = input("Options: Select 1 default parameter settings, 2 quick setup, 3 for advanced, 4 run, 5 for quit")
+
+def parameters(user_input):
+    user_input == 1
+    print("Default settings for simulation")
+    sim = para.Simulation()
+    print(sim.__str__())
+        
+parameters(user_input)
+    
+def Quick_setup(user_input):
     while True:
             
-        Size_world=input("Size of the world: ")
-        
-        Size_pop=input("Size of the populations: ")
-    
-        Size_limit=input("Duration limit: ")
-        
-        sim_mode=input("Simulation mode ")
-        
-        if Size_world>0:
-            a=True
-        if Size_pop>0:
-            a=True
-        if Size_limit>0:
-            a=True
-        if sim_mode>0:
-            a=True
-                
-                
-            # if a+b+c+d==4:
-            #     break
-
-
-
-
-def Print_parameters():    ## Jannik
-    print("this is the stof")
-    
-    
+       
+        ## Reporting
 
 
 def Advanced_setup(): ## Jannik
-    print("wow")
+    print("Set advanced options ")
+        ## Values for fox population
+        ad_fox_initial_size = int(input("Input the initial fox population size ")) ## Noget med initial size og population skal ændres
+        ad_fox_metabolism = int(input("Input fox metabolism as an integer "))
+        ad_fox_max_age = int(input("Input fox maximum age as an integer "))
+        ad_fox_maximum_energy = int(input("Input maximum energy for foxes "))
+        ad_fox_reproduction_rate = float(input("Input reproductionrate for foxes "))
+        ad_fox_reproduction_cost = int(input("Input reproduction cost for foxes "))
+        ad_fox_reproduction_age = int(input("Input fox fertility age "))
+
+        ad_fox_population = Population('foxes', ad_fox_initial_size, ad_fox_metabolism, ad_fox_max_age, ad_fox_maximum_energy, ad_fox_reproduction_rate, ad_fox_reproduction_cost, ad_fox_reproduction_age)
+
+        #Values for bunny population
+        ad_bunny_initial_size = int(input("Input the initial rabbit population size "))
+        ad_bunny_metabolism = int(input("Input rabbit metabolism as an integer "))
+        ad_bunny_max_age = int(input("Input rabbit maximum age as an integer "))
+        ad_bunny_maximum_energy = int(input("Input maximum energy for rabbits "))
+        ad_bunny_reproduction_rate = float(input("Input reproduction rate for rabbits "))  
+        ad_bunny_reproduction_cost = int(input("Input reproduction cost for rabbits "))
+        ad_bunny_reproduction_age = int(input("Input rabbit fertility age "))
+
+        ad_bunny_population = Population('rabbits', ad_bunny_initial_size, ad_bunny_metabolism, ad_bunny_max_age, ad_bunny_maximum_energy, ad_bunny_reproduction_rate, ad_bunny_reproduction_cost, ad_bunny_reproduction_age)
+        print(ad_bunny_population)
 
 def Run(): ## Jannik
     print("run run runnnn")
