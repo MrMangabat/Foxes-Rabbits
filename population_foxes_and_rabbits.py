@@ -30,10 +30,11 @@ def main_menu():
         sys.exit()
 
 
-def parameters():
+def parameters(): ## den skal kontrolleres, tror ikke det lever
     if parameters == quick_setup:
         rabbit_pop
         fox_pop
+        world_set
     elif parameters == advanced_menu_settings:
         ad_bunny_population
         ad_fox_population
@@ -99,7 +100,7 @@ def advanced_menu_settings(): ## Er stuck i et loop
         print("somesome")
 
         
-#def ad_exetution_settings():
+#def ad_exetution_settings():                                       ##### Denne skal også kontrolleres og 
 #    user_input = int(input()
 #    if user_input == "1" or True:
 #        batch_confiq = Execution(batch = True)
