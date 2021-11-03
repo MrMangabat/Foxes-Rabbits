@@ -20,11 +20,61 @@ def parameters(user_input):
         
 parameters(user_input)
     
-def Quick_setup(user_input):
-    while True:
-            
+    
+def is_int(x):
+    try:
+        int(x)
+        # print("Is int or bolean")
+        return True
+    except Exception:
+        # print("The inputtede varible is not a integer: " + str(x))
+        return False
+
+
+
+def in_Between(x,above=0,below=10**3):
+        
+    # print("\nAbove")
+    is_int(above)
+    
+    # print("\nbelow")
+    is_int(below)
+    
+    
+    # print("\nand")
+    if int(above) < int(x) and int(below) > int(x):
+        # print("Aproved")  ## slettes eller laves om når vi har styr på det hele 
+        return True
+    else:
+        # print("not between: " + str(above) + " and " + str(below))
+        return False    
+
+    
+    
+def Quick_setup():
+    
+
+    Quick=[0,0,0,""] #    Quick=[Size_world,Size_pop,D_limit,Sim_mode]
+    Text=["Size of the world: ","Size of the populations: ","Duration limit: ","Simulation mode: "]
+    for n in range(len(Quick)):
+        
+        if is_int(Quick[n]):
+            while True:
+                Quick[n]=input(Text[n])
+                if (is_int(Quick[n])) and (in_Between(Quick[n])):
+                    break
+                else:
+                    print("nope not correct")
+        else:
+            while True:
+                Quick[n]=input(Text[n])
+                if not is_int(Quick[n]):
+                    break
+                else:
+                    print("nope not correct")
+    return Quick
        
-        ## Reporting
+ 
 
 
 def Advanced_setup(): ## Jannik
@@ -80,31 +130,6 @@ def main_menu():
         print("5")
     else:
         main_menu()
-    
-def is_int(x):
-    try:
-        int(x)
-        print("Is int or bolean")
-    except Exception:
-        print("The inputtede varible is not a integer: " + str(x))
-
-
-
-def in_Between(x,above=0,below=10**3):
-    
-    print("\nAbove")
-    is_int(above)
-    
-    print("\nbelow")
-    is_int(below)
-    
-    
-    print("\nand")
-    if above < x and below > x:
-        print("Aproved")  ## slettes eller laves om når vi har styr på det hele 
-        
-    else:
-        print("not between: " + str(above) + " and " + str(below))
     
     
 
