@@ -12,19 +12,15 @@ from parameters import Execution, Simulation, World, Population
 import sys
 import math
 
+
 def is_int2(user_input):
-    """
- 
-    Parameters
-    ----------
-    user_input : Positiv integer 
-        DESCRIPTION.
+    """[This function valideates an input and handles potential errors for datatype int]
 
-    Returns
-    -------
-    TYPE
-        DESCRIPTION.
+    Args:
+        user_input ([int]): [Validates if a user input is an interger]
 
+    Returns:
+        [int]: [Returns input as integer]
     """
     try:
         return int(user_input)
@@ -34,19 +30,13 @@ def is_int2(user_input):
     
     
 def is_float(user_input):
-    """
-    
+    """[This function valideates an input and handles potential errors for datatype float]
 
-    Parameters
-    ----------
-    user_input : TYPE
-        DESCRIPTION.
+    Args:
+        user_input ([float]): [Validates if a user input is a float]
 
-    Returns
-    -------
-    TYPE
-        DESCRIPTION.
-
+    Returns:
+        [float]: [Returns input as float]
     """
     try:
         return float(user_input)
@@ -54,19 +44,13 @@ def is_float(user_input):
         return is_float(input("Please enter a valid value: "))
 
 def is_bool(user_input):  
-    """
-    
+    """[This function valideates an input and handles potential errors for datatype integer, and returns a boolean value]
 
-    Parameters
-    ----------
-    user_input : TYPE
-        DESCRIPTION.
+    Args:
+        user_input ([int]): [Validates if a user input is a integer]
 
-    Returns
-    -------
-    TYPE
-        DESCRIPTION.
-
+    Returns:
+        [bool]: [Returns input as bool]
     """
     # integer control in input
     user_input                              = is_int2(user_input)
@@ -78,21 +62,14 @@ def is_bool(user_input):
         
 
 def above_value_i(user_input,ab):
-    """
-    
+    """[This function valideates an input to be above a certain value.]
 
-    Parameters
-    ----------
-    user_input : TYPE
-        DESCRIPTION.
-    ab : TYPE
-        DESCRIPTION.
+    Args:
+        user_input ([int]): [Will be an input from either quick setup]
+        ab ([type]): [description]
 
-    Returns
-    -------
-    TYPE
-        DESCRIPTION.
-
+    Returns:
+        [int]: [description]
     """
     # interger control in input
     user_input                              = is_int2(user_input)
@@ -102,21 +79,14 @@ def above_value_i(user_input,ab):
         return above_value_i(input("The value must be above {}: ".format(ab)),ab)
     
 def above_value_f(user_input,ab):
-    """
-    
+    """[summary]
 
-    Parameters
-    ----------
-    user_input : TYPE
-        DESCRIPTION.
-    ab : TYPE
-        DESCRIPTION.
+    Args:
+        user_input ([float]): [description]
+        ab ([type]): [description]
 
-    Returns
-    -------
-    TYPE
-        DESCRIPTION.
-    
+    Returns:
+        [float]: [description]
     """
     # float control in input
     user_input                              = is_float(user_input)
@@ -128,23 +98,15 @@ def above_value_f(user_input,ab):
 
 
 def world_size(user_input,Call_place,sim):
-    """
-    
+    """[Function that handles the parameters for world configuration]
 
-    Parameters
-    ----------
-    user_input : TYPE
-        DESCRIPTION.
-    Call_place : TYPE
-        DESCRIPTION.
-    sim : TYPE
-        DESCRIPTION.
+    Args:
+        user_input ([int]): [User input]
+        Call_place ([type]): [description]
+        sim ([Class]): [Accesses and stores new values for simulation]
 
-    Returns
-    -------
-    TYPE
-        DESCRIPTION.
-
+    Returns:
+        [int]: [The new stored values for world size]
     """
     # integer kontrol of input
     user_input                              = is_int2(user_input)
@@ -161,21 +123,14 @@ def world_size(user_input,Call_place,sim):
         return world_size(input("The value must be {} or above: ".format(limit_above)),Call_place,sim)
 
 def pop_size(user_input,sim):
-    """
-    
+    """[Function which checks that population size is not bigger than the world area andControls the integer inpput.]
 
-    Parameters
-    ----------
-    user_input : TYPE
-        DESCRIPTION.
-    sim : TYPE
-        DESCRIPTION.
+    Args:
+        user_input ([int]): [An input from user]
+        sim ([Class]): [Accesses and stores new values for simulation]
 
-    Returns
-    -------
-    TYPE
-        DESCRIPTION.
-
+    Returns:
+        [int]: [If world area is less than population size, ]
     """
     # integer kontrol of input
     user_input                            = above_value_i(user_input,0)
@@ -191,18 +146,10 @@ def pop_size(user_input,sim):
 ###############################
 
 def main_menu(sim = Simulation()):
-    """
-    
+    """[Function that gives the simulation an menu to navigate]
 
-    Parameters
-    ----------
-    sim : TYPE, optional
-        DESCRIPTION. The default is Simulation().
-
-    Returns
-    -------
-    None.
-
+    Args:
+        sim ([Class], optional): [Accesses the default values from the module paramters]. Defaults to Simulation().
     """
     while True:
 
@@ -228,18 +175,10 @@ def main_menu(sim = Simulation()):
         ## Returns to main menu with default settings
 
 def world_setup(sim):
-    """
-    
+    """[Function that configure the world setup. Here the user can choose the shape of the world, north/sount- and  west/east length.
 
-    Parameters
-    ----------
-    sim : TYPE
-        DESCRIPTION.
-
-    Returns
-    -------
-    None.
-
+    Args:
+        sim ([Class]): [Accesses and stores new values into simulation ]
     """
     sim.world.is_toroid                     = is_bool(input("Island shape: 1 for Toroid, 0 for Square "))
     
@@ -252,18 +191,10 @@ def world_setup(sim):
 
 
 def qs(sim):
-    """
-    
+    """[Function that creates the quick setup for simulation. Accesses and stores new values for species.initial_size, all execution and world parameters.]
 
-    Parameters
-    ----------
-    sim : TYPE
-        DESCRIPTION.
-
-    Returns
-    -------
-    None.
-
+    Args:
+        sim ([class]): [description]
     """
     sim.rabbits.initial_size                =  pop_size(input("Rabbit populations: "),sim)
     
@@ -278,18 +209,10 @@ def qs(sim):
 
 
 def exe(sim):
-    """
-    
+    """[Function that gives access to configure the execution parameters for the simulation]
 
-    Parameters
-    ----------
-    sim : TYPE
-        DESCRIPTION.
-
-    Returns
-    -------
-    None.
-
+    Args:
+        sim ([class]): [Accesses and stores new values into simulation.execution]
     """
     sim.execution.batch                     = is_bool(input("Batch: Vizualization(s) 1, 0 for none ")) 
         
@@ -300,18 +223,13 @@ def exe(sim):
 
 
 def advanced_menu_settings(sim):
-    """
-    
+    """[Function that handles the advanced menu settings in the simulation.]
 
-    Parameters
-    ----------
-    sim : TYPE
-        DESCRIPTION.
+    Args:
+        sim ([class]): [Imported module from parameters. Describes the simulation setup containing default values for all parameters.]
 
-    Returns
-    -------
-    None.
-
+    Returns:
+        [class]: [Returns the last configuration from the advanced menu settings]
     """
     while True:
         user_input = input("Options:\n1 World settings\n2 rabbit pupolation settings\n3 fox poplation settings\n4 execution settings\n5 return to main menu\n\n")
@@ -333,22 +251,13 @@ def advanced_menu_settings(sim):
             
 
 
-
-
 def ad_r(sim):
-    """
-    
-    Parameters
-    ----------
-    sim : TYPE
-        DESCRIPTION.
+    """[Gives access to configure all parameters for rabbits in advanced settings and saves the new parameters in simulation]
 
-    Returns
-    -------
-    None.
-
+    Args:
+        sim ([class]): [Accesses and stores new values into simulation.rabbits]
     """
-    
+
     sim.rabbits.initial_size                    = pop_size(input("Rabbit populations: "),sim)
     sim.rabbits.metabolism                      = above_value_i(input("Input rabbit metabolism: "),0)
     sim.rabbits.max_age                         = above_value_i(input("Input rabbit max age: "),0)           
@@ -356,24 +265,14 @@ def ad_r(sim):
     sim.rabbits.reproduction_probability        = above_value_f(input("Input rabbit younglings probability "),0)
     sim.rabbits.reproduction_min_energy         = above_value_i(input("Input rabbit minimum energy for reproduction: "),0)
     sim.rabbits.reproduction_min_age            = above_value_i(input("Input rabbit age, for making mini rabbits: "),0)
-    
+       
 
-
-        
 
 def ad_f(sim):
-    """
-    
+    """[Gives access to configure all parameters for foxes in advanced settings]
 
-    Parameters
-    ----------
-    sim : TYPE
-        DESCRIPTION.
-
-    Returns
-    -------
-    None.
-
+    Args:
+        sim ([class]): [Accesses and stores new values into simulation.foxes]
     """
     
     sim.foxes.initial_size                    = pop_size(input("Foxes populations: "),sim)
@@ -385,13 +284,15 @@ def ad_f(sim):
     sim.foxes.reproduction_min_age            = above_value_i(input("Input foxes age, for making mini rabbits: "),0)
     
 
-       
 
 ## Reporting menu for user interaction
 def reporting_menu(results):
-    '''
-    Gives the user the options to select which kind of plot analyse they want
-    '''
+    """[Gives the user the options to select which kind of plot analyse they want]
+
+    Args:
+        results ([float]): [This will have the results from the simulation, for further analyzing]
+    """    
+    
     while True:
         print("Select plot to analyze\n1 Summary\n2 Population size\n3 Lifespan foxes and rabbits\n4 Energy consumption\n5 Kill plot \n6 Quit")
         
