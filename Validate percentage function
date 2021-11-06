@@ -1,0 +1,13 @@
+def validate_percentage_input(user_input):  
+    
+    try:
+        user_input = int(user_input)
+        
+        if user_input >= 0 and user_input <= 1.0:
+            return user_input
+        else:
+            validate_percentage_input(input("Please enter a valid percentage (between 0.0 and 1.0): "))
+    except ValueError:
+        validate_percentage_input(input("Please enter a valid percentage (between 0.0 and 1.0): "))
+        
+### Skal bruges der hvor vi arbejder med float, er denne ikke med, vil vi få AssertationError 1 pga. parameters module
