@@ -377,7 +377,7 @@ def ad_f(sim):
 
     """
     
-    sim.foxes.initial_size                    = pop_size(input("Rabbit populations: "),sim)
+    sim.foxes.initial_size                    = pop_size(input("Fox populations: "),sim)
     sim.foxes.metabolism                      = above_value_i(input("Input foxes metabolism: "),0)
     sim.foxes.max_age                         = above_value_i(input("Input foxes max age: "),0)           
     sim.foxes.max_energy                      = above_value_i(input("Input foxes max energy levels: "),0)
