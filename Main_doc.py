@@ -15,6 +15,20 @@ import math
 
 
 def is_int2(user_input):
+    """
+    
+
+    Parameters
+    ----------
+    user_input : Positiv integer 
+        DESCRIPTION.
+
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    """
     try:
         return int(user_input)
     except ValueError:
@@ -23,14 +37,43 @@ def is_int2(user_input):
     
     
 def is_float(user_input):
+    """
+    
+
+    Parameters
+    ----------
+    user_input : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    """
     try:
         return float(user_input)
     except ValueError:
         return is_float(input("Please enter a valid value: "))
 
 def is_bool(user_input):  
+    """
+    
 
-    user_input=is_int2(user_input)
+    Parameters
+    ----------
+    user_input : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    """
+    # integer control in input
+    user_input                              = is_int2(user_input)
+    
     if user_input in [0, 1]:
         return bool(user_input)
     else:
@@ -38,16 +81,49 @@ def is_bool(user_input):
         
 
 def above_value_i(user_input,ab):
+    """
     
-    user_input=is_int2(user_input)
+
+    Parameters
+    ----------
+    user_input : TYPE
+        DESCRIPTION.
+    ab : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    """
+    # interger control in input
+    user_input                              = is_int2(user_input)
     if user_input>ab:
         return user_input
     else:
         return above_value_i(input("The value must be above {}: ".format(ab)),ab)
     
 def above_value_f(user_input,ab):
+    """
     
-    user_input=is_float(user_input)
+
+    Parameters
+    ----------
+    user_input : TYPE
+        DESCRIPTION.
+    ab : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    """
+    # float control in input
+    user_input                              = is_float(user_input)
+    
     if user_input>ab:
         return user_input
     else:
@@ -55,11 +131,32 @@ def above_value_f(user_input,ab):
 
 
 def world_size(user_input,Call_place,sim):
-
-    user_input=is_int2(user_input)
+    """
     
-    limit_pop=max([int(sim.rabbits.initial_size),int(sim.foxes.initial_size)])
-    limit_above=math.ceil(limit_pop/int(getattr(sim.world,Call_place)))
+
+    Parameters
+    ----------
+    user_input : TYPE
+        DESCRIPTION.
+    Call_place : TYPE
+        DESCRIPTION.
+    sim : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    """
+    # integer kontrol of input
+    user_input                              = is_int2(user_input)
+    
+    # Getting the minimum value of the world area of the world
+    limit_pop                               = max([int(sim.rabbits.initial_size),int(sim.foxes.initial_size)])
+    
+    # calculation of the minimum value of the world in in one dimension
+    limit_above                             = math.ceil(limit_pop/int(getattr(sim.world,Call_place)))
     
     if int(limit_above) <= int(user_input):
         return user_input
@@ -67,9 +164,26 @@ def world_size(user_input,Call_place,sim):
         return world_size(input("The value must be {} or above: ".format(limit_above)),Call_place,sim)
 
 def pop_size(user_input,sim):
+    """
     
-    user_input=is_int2(user_input)
-    limit_pop=sim.world.area()
+
+    Parameters
+    ----------
+    user_input : TYPE
+        DESCRIPTION.
+    sim : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    """
+    # integer kontrol of input
+    user_input                            = is_int2(user_input)
+    # Getting the limit for the population
+    limit_pop                             = sim.world.area()
     
     if int(limit_pop) >= int(user_input):
         return user_input
@@ -80,12 +194,21 @@ def pop_size(user_input,sim):
 ###############################
 
 def main_menu(sim = Simulation()):
-    while True:
-        """Function that containt main menu settings.
+    """
+    
 
-        Args:
-            sim ([int], optional): [Updates simulation values if quick set has been used. Same occurs if advanced settings have been used]. Defaults to Simulation values().
-        """    
+    Parameters
+    ----------
+    sim : TYPE, optional
+        DESCRIPTION. The default is Simulation().
+
+    Returns
+    -------
+    None.
+
+    """
+    while True:
+
         user_input = is_int2(input("Options: Press a number, then enter to select\n1 Display parameter settings\n2 quick setup\n3 for advanced settings\n4 run\n5 for quit\n\n"))
         
         ## Default parameters 
@@ -107,48 +230,45 @@ def main_menu(sim = Simulation()):
             sys.exit()
         ## Returns to main menu with default settings
 
-def validate_bool_input(input):                             # Validates boolean for worl_setup, 1/true = toroid or 2/false = square
-    """Function validates bool input
-
-    Args:
-        input ([bool]): [True or False statement]
-
-    Raises:
-        ValueError: [User should use 1 or 0 to decide whether or not it is true or false instead of strings or integers.]
-
-    Returns:
-        [bool]: [True or False]
-    """    
-    if input in [1, 0]:
-        return bool(input)
-    else:
-        raise ValueError("Invalid input ")
-
-
-
 def world_setup(sim):
-    """Function containing confiquration for world settings
-
-    Returns:
-        [int]: [Width and length of the world]
-        [bool]: [If bool = True, returns toroid shape, else a square/simple island shape]
     """
     
-    sim.world.is_toroid = is_bool(input("Island shape: 1 for Toroid, 0 for Square "))
+
+    Parameters
+    ----------
+    sim : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    None.
+
+    """
+    sim.world.is_toroid                     = is_bool(input("Island shape: 1 for Toroid, 0 for Square "))
     
-    sim.world.west_east_length = world_size(input("Insert vertifcal length from west to east "),"north_south_length",sim)
+    sim.world.west_east_length              = world_size(input("Insert vertifcal length from west to east "),"north_south_length",sim)
     
-    sim.world.north_south_length  = world_size(input("Insert H length from west to east "),"west_east_length",sim)
+    sim.world.north_south_length            = world_size(input("Insert H length from west to east "),"west_east_length",sim)
 
 
 
 def qs(sim):
-    """[Function that greates a quick setup for the simulation of foxes and rabbits.\nUser will only have acces to set rabbit, fox population, duration of the simulation and simulation mode]
-    """    
-
-    sim.rabbits.initial_size =  pop_size(input("Rabbit populations: "),sim)
+    """
     
-    sim.foxes.initial_size =    pop_size(input("Fox populations: "),sim)
+
+    Parameters
+    ----------
+    sim : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    None.
+
+    """
+    sim.rabbits.initial_size                =  pop_size(input("Rabbit populations: "),sim)
+    
+    sim.foxes.initial_size                  = pop_size(input("Fox populations: "),sim)
     
     exe(sim)
  
@@ -159,30 +279,51 @@ def qs(sim):
 
 
 def exe(sim):
-        
-    sim.execution.batch = is_bool(input("Batch: Vizualization(s) 1, 0 for none ")) 
-        
-    sim.execution.max_steps = above_value_i(input("Input maximum step for current simulation session "),0)
+    """
+    
 
-    sim.execution.step_delay =above_value_f(input("Add a delay in seconds "),0)
+    Parameters
+    ----------
+    sim : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    None.
+
+    """
+    sim.execution.batch                     = is_bool(input("Batch: Vizualization(s) 1, 0 for none ")) 
+        
+    sim.execution.max_steps                 = above_value_i(input("Input maximum step for current simulation session "),0)
+
+    sim.execution.step_delay                = above_value_f(input("Add a delay in seconds "),0)
 
 
 
 def advanced_menu_settings(sim):
-    """A Function that contains advanced menu settings
+    """
+    
 
-    Returns:
-        [int]: [User navigates menu with intergers and commit their choices with "Enter"]
+    Parameters
+    ----------
+    sim : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    None.
+
     """
     while True:
         user_input = input("Options:\n1 World settings\n2 rabbit pupolation settings\n3 fox poplation settings\n4 execution settings\n5 return to main menu\n\n")
 
         if int(user_input) == 1:
             world_setup(sim)
-            ##Husk at send instansen rundt i funktionerne, lav ikke en ny. 
         elif int(user_input) == 2:
+            # rabbit setup
             ad_r(sim)
         elif int(user_input) == 3:
+            # fox setup
             ad_f(sim)
         elif int(user_input) == 4:
             exe(sim)
@@ -196,17 +337,17 @@ def advanced_menu_settings(sim):
 
 
 def ad_r(sim):
-    """Function that takes user through all variables rabbits have for simulation. User will have to set all parameters pr. rotation.\n
-    init_s_r = initial size rabbit.\n
-    meta_r = metabolism rabbit.\n
-    max_age_r = maximum age rabbit.\n
-    ene_r = maximum energy level rabbit.\n
-    repro_prop_r = reproduction probability rate.\n
-    repro_m_e_r = reproduction minimal energy rate --> Explain the min. amount of energy needed to make babies.\n
-    repro_fer_r = reproduction fertility age --> Explain the minimum age for reproduction.\n
+    """
+    
+    Parameters
+    ----------
+    sim : TYPE
+        DESCRIPTION.
 
-    Returns:
-        [int]: [Describes the entire population for simulation]
+    Returns
+    -------
+    None.
+
     """
     
     sim.rabbits.initial_size                    = pop_size(input("Rabbit populations: "),sim)
@@ -222,17 +363,18 @@ def ad_r(sim):
         
 
 def ad_f(sim):
-    """Function that takes user through all variables rabbits have for simulation. User will have to set all parameters pr. rotation.\n
-    init_s_r = initial size rabbit.\n
-    meta_r = metabolism rabbit.\n
-    max_age_r = maximum age rabbit.\n
-    ene_r = maximum energy level rabbit.\n
-    repro_prop_r = reproduction probability rate.\n
-    repro_m_e_r = reproduction minimal energy rate --> Explains the min. amount of energy needed to make babies.\n
-    repro_fer_r = reproduction fertility age --> Explains the minimum age for reproduction.\n
+    """
+    
 
-    Returns:
-        [int]: [Describes the entire population for simulation]
+    Parameters
+    ----------
+    sim : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    None.
+
     """
     
     sim.foxes.initial_size                    = pop_size(input("Rabbit populations: "),sim)
@@ -249,7 +391,7 @@ def ad_f(sim):
 ## Reporting menu for user interaction
 def reporting_menu(results):
     '''
-    Gives the user the options to select which menu they want to analyse
+    Gives the user the options to select which kind of plot analyse they want
     '''
     while True:
         print("Select plot to analyze\n1 Summary\n2 Population size\n3 Lifespan foxes and rabbits\n4 Energy consumption\n5 Kill plot \n6 Quit")
