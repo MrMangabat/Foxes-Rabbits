@@ -8,7 +8,7 @@
 
 import simulation
 import reporting
-from parameters import Execution, Simulation, World, Population
+from parameters import Execution, , World, Population
 import sys
 import math
 
@@ -120,12 +120,10 @@ def validate_percentage_input(user_input): # Use case 6
 
 def world_size(user_input,Call_place,sim): # Use case 7
     """[Function control and validate that the user_input is an integer and fulfills the condition of the world being big enough for the population ]
-
     Args:
         user_input ([str]): [User input as string of the user]
         Call_place ([str]): [Attribiuts instans]
-        sim ([Class]): [A class from the module parameters.Simulation used here to get a varible]
-
+        sim ([Class]): [A class from the module parameters called Simulation used here to get a varible]
     Returns:
         [int]: [The controld integer value]
     """
@@ -146,11 +144,9 @@ def world_size(user_input,Call_place,sim): # Use case 7
 
 def pop_size(user_input,sim): # Use case 8
     """[Function which checks that population size is not bigger than the world area and Controls if the user_input is a integer]
-
     Args:
         user_input ([str]): [An input from user]
-        sim ([Class]): [A class from the module parameters.Simulation used here to get a varible]
-
+        sim ([Class]): [A class from the module parameters called Simulation used here to get a varible]
     Returns:
         [int]: [The controled integer]
     """
@@ -169,9 +165,8 @@ def pop_size(user_input,sim): # Use case 8
 
 def main_menu(sim = Simulation()): # Use case 9
     """[Function that initialize the parameters.Simulation and open a menu to navigate the program]
-
     Args:
-        sim ([Class]): [A class from the module parameters.Simulation used here to initialize our simulation and set the standart values]
+        sim ([Class]): [A class from the module parameters called Simulation used here to initialize our simulation and set the standart values]
     """
     
     # While loop to get around the control of the user_input.
@@ -183,7 +178,6 @@ def main_menu(sim = Simulation()): # Use case 9
         ## Display parameters 
         if user_input == "1":                                     # Prints values for either quick setup or advanced settings.
             print(sim.__str__())
-
         ## Quick setup
         elif user_input == "2":                                   # Takes user to quick setup simulation options.
             qs(sim)
@@ -204,9 +198,8 @@ def main_menu(sim = Simulation()): # Use case 9
 
 def world_setup(sim): # Use case 10
     """[Function that configure the world setup. Here the user can choose the shape of the world, north/sount- and  west/east length.
-
     Args:
-        sim ([Class]): [A class from the module parameters.Simulation used here to set and forward in the function used]
+        sim ([Class]): [A class from the module parameters called Simulation used here to set and forward in the function used]
     """
     sim.world.is_toroid                     = is_bool(input("Island shape: 1 for Toroid, 0 for Square "))
     
@@ -214,48 +207,46 @@ def world_setup(sim): # Use case 10
     
     sim.world.north_south_length            = world_size(input("Insert north-south length: "),"west_east_length",sim)
 
+
 def qs(sim): # Use case 11
     """[Function that creates the quick setup our simulation class(sim). Accesses and stores new values for "species".initial_size.]
-
     Args:
-        sim ([Class]): [A class from the module parameters.Simulation used here to set and forward in the function used]
+        sim ([Class]): [A class from the module parameters called Simulation used here to set and forward in the function used]
     """
     
     sim.world.west_east_length              = above_value_i(input("Insert west-east length: "),0)
     
     sim.world.north_south_length            = above_value_i(input("Insert north-south length: "),0)
-
+    
     sim.rabbits.initial_size                =  pop_size(input("Rabbit populations: "),sim)
     
     sim.foxes.initial_size                  = pop_size(input("Fox populations: "),sim)
     
     exe(sim)
-
-
+    
     print("Quick setup complete, returning to main menu")
 
 def exe(sim): # Use case 12.
     """[Function that gives access to configure the execution parameters for the simulation]
-
     Args:
-        sim ([class]): [Accesses and stores new values into simulation.execution]
+        sim ([class]): [A class from the module parameters called Simulation used here to set and forward in the function used]
     """
     sim.execution.batch                     = is_bool(input("Batch: Vizualization(s) 1, 0 for none ")) 
         
     sim.execution.max_steps                 = above_value_i(input("Input maximum step for current simulation session "),0)
-
+    
     sim.execution.step_delay                = above_value_f(input("Add a delay in seconds "),0)
 
 def advanced_menu_settings(sim): # Use case 13
     """[Function that handles the advanced menu settings in the simulation.]
-
+    
     Args:
-        sim ([class]): [Imported module from parameters. Describes the simulation setup containing default values for all parameters.]
-
+        sim ([class]): [A class from the module parameters called Simulation used here to forward in the function used]
+        
     """
     while True:
         user_input = input("Options:\n1 World settings\n2 rabbit pupolation settings\n3 fox poplation settings\n4 execution settings\n5 return to main menu\n\n")
-
+        
         if user_input == "1":
             world_setup(sim)
         elif user_input == "2":
@@ -273,11 +264,11 @@ def advanced_menu_settings(sim): # Use case 13
 
 def ad_r(sim): # Use case 14
     """[Gives access to configure all parameters for rabbits in advanced settings and saves the new parameters in simulation]
-
+    
     Args:
-        sim ([class]): [Accesses and stores new values into simulation.rabbits]
+        sim ([class]): [A class from the module parameters called Simulation used here to set and forward in the function used]
     """
-
+    
     sim.rabbits.initial_size                    = pop_size(input("Rabbit populations: "),sim)
     sim.rabbits.metabolism                      = above_value_i(input("Input rabbit metabolism: "),0)
     sim.rabbits.max_age                         = above_value_i(input("Input rabbit max age: "),0)           
@@ -288,9 +279,9 @@ def ad_r(sim): # Use case 14
 
 def ad_f(sim): # Use case 14
     """[Gives access to configure all parameters for foxes in advanced settings]
-
+    
     Args:
-        sim ([class]): [Accesses and stores new values into simulation.foxes]
+        sim ([class]): [A class from the module parameters called Simulation used here to set and forward in the function used]
     """
     
     sim.foxes.initial_size                    = pop_size(input("Foxes populations: "),sim)
@@ -306,9 +297,9 @@ def ad_f(sim): # Use case 14
 ## Reporting menu for user interaction
 def reporting_menu(results): # Use case 16
     """[Gives the user the options to select which kind of plot analyse they want]
-
+    
     Args:
-        results ([class]): [This will have the results from the simulation, for further analyzing]
+        results ([class]): [This will have the results from the class simulation, for further analyzing]
     """    
     
     while True:
