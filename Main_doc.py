@@ -8,7 +8,7 @@
 
 import simulation
 import reporting
-from parameters import Execution, , World, Population
+import parameters 
 import sys
 import math
 
@@ -163,7 +163,7 @@ def pop_size(user_input,sim): # Use case 8
 
 ###############################
 
-def main_menu(sim = Simulation()): # Use case 9
+def main_menu(sim = parameters.Simulation()): # Use case 9
     """[Function that initialize the parameters.Simulation and open a menu to navigate the program]
     Args:
         sim ([Class]): [A class from the module parameters called Simulation used here to initialize our simulation and set the standart values]
@@ -299,7 +299,7 @@ def reporting_menu(results): # Use case 16
     """[Gives the user the options to select which kind of plot analyse they want]
     
     Args:
-        results ([class]): [This will have the results from the class simulation, for further analyzing]
+        results ([class]): [This will have the results from the simulation, for further analyzing]
     """    
     
     while True:
@@ -323,6 +323,7 @@ def reporting_menu(results): # Use case 16
             
             reporting.plot_kills(results)
         elif user_input == "6":
+            done()
             sys.exit()
         else:
             print("\nPlease input a value between 1 and 6\n")
