@@ -13,7 +13,7 @@ import sys
 import math
 
 
-def is_int2(user_input):
+def is_int2(user_input): # Use case 9.
     """[This function valideates an input and handles potential errors for datatype int]
 
     Args:
@@ -29,7 +29,7 @@ def is_int2(user_input):
     
     
     
-def is_float(user_input):
+def is_float(user_input): # Use case 15.
     """[This function valideates an input and handles potential errors for datatype float]
 
     Args:
@@ -43,7 +43,7 @@ def is_float(user_input):
     except ValueError:
         return is_float(input("Please enter a valid float: "))
 
-def is_bool(user_input):  
+def is_bool(user_input): # Use case 11.
     """[This function valideates an input and handles potential errors for datatype integer, and returns a boolean value]
 
     Args:
@@ -61,7 +61,7 @@ def is_bool(user_input):
         return is_bool(input("Please enter a valid binary value (0 or 1): "))
         
 
-def above_value_i(user_input,above):
+def above_value_i(user_input,above): # Use case 12
     """[This function valideates an input to be above a certain value.]
 
     Args:
@@ -78,7 +78,7 @@ def above_value_i(user_input,above):
     else:
         return above_value_i(input("The value must be above {}: ".format(above)),above)
     
-def above_value_f(user_input,above):
+def above_value_f(user_input,above): # Use case 15
     """[summary]
 
     Args:
@@ -96,7 +96,7 @@ def above_value_f(user_input,above):
     else:
         return above_value_f(input("The value must be above {}: ".format(above)),above)
     
-def validate_percentage_input(user_input):  
+def validate_percentage_input(user_input): # Use case 14
     """[Validate if the user input is a floating point]
         
     Args:
@@ -115,7 +115,7 @@ def validate_percentage_input(user_input):
         return validate_percentage_input(input("Please enter a valid value (between 0.0 and 1.0): "))
 
 
-def world_size(user_input,Call_place,sim):
+def world_size(user_input,Call_place,sim): # Use case 14.
     """[Function that handles the parameters for world configuration]
 
     Args:
@@ -140,7 +140,7 @@ def world_size(user_input,Call_place,sim):
     else:
         return world_size(input("The value must be {} or above: ".format(limit_above)),Call_place,sim)
 
-def pop_size(user_input,sim):
+def pop_size(user_input,sim): # Use case 10
     """[Function which checks that population size is not bigger than the world area andControls the integer inpput.]
 
     Args:
@@ -163,7 +163,7 @@ def pop_size(user_input,sim):
 
 ###############################
 
-def main_menu(sim = Simulation()):
+def main_menu(sim = Simulation()): # Use case 1.
     """[Function that gives the simulation an menu to navigate]
 
     Args:
@@ -195,7 +195,7 @@ def main_menu(sim = Simulation()):
             print("\nPleae input value between 1 and 5 \n")
         ## Returns to main menu with default settings
 
-def world_setup(sim):
+def world_setup(sim): # Use case 14.
     """[Function that configure the world setup. Here the user can choose the shape of the world, north/sount- and  west/east length.
 
     Args:
@@ -210,7 +210,7 @@ def world_setup(sim):
 
 
 
-def qs(sim):
+def qs(sim): # Use case 3.
     """[Function that creates the quick setup for simulation. Accesses and stores new values for species.initial_size, all execution and world parameters.]
 
     Args:
@@ -232,7 +232,7 @@ def qs(sim):
 
 
 
-def exe(sim):
+def exe(sim): # Use case 8.
     """[Function that gives access to configure the execution parameters for the simulation]
 
     Args:
@@ -246,7 +246,7 @@ def exe(sim):
 
 
 
-def advanced_menu_settings(sim):
+def advanced_menu_settings(sim): # Use case 4
     """[Function that handles the advanced menu settings in the simulation.]
 
     Args:
@@ -273,7 +273,7 @@ def advanced_menu_settings(sim):
             
 
 
-def ad_r(sim):
+def ad_r(sim): # Use case 13.
     """[Gives access to configure all parameters for rabbits in advanced settings and saves the new parameters in simulation]
 
     Args:
@@ -290,7 +290,7 @@ def ad_r(sim):
        
 
 
-def ad_f(sim):
+def ad_f(sim): # Use case 13.
     """[Gives access to configure all parameters for foxes in advanced settings]
 
     Args:
@@ -308,7 +308,7 @@ def ad_f(sim):
 
 
 ## Reporting menu for user interaction
-def reporting_menu(results):
+def reporting_menu(results): # Use case 7.
     """[Gives the user the options to select which kind of plot analyse they want]
 
     Args:
