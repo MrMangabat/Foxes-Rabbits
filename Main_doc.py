@@ -203,9 +203,9 @@ def world_setup(sim):
     """
     sim.world.is_toroid                     = is_bool(input("Island shape: 1 for Toroid, 0 for Square "))
     
-    sim.world.west_east_length              = world_size(input("Insert vertifcal length from west to east "),"north_south_length",sim)
+    sim.world.west_east_length              = world_size(input("Insert west-east length: "),"north_south_length",sim)
     
-    sim.world.north_south_length            = world_size(input("Insert H length from west to east "),"west_east_length",sim)
+    sim.world.north_south_length            = world_size(input("Insert north-south length: "),"west_east_length",sim)
 
 
 
