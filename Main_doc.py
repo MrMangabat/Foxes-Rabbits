@@ -156,7 +156,7 @@ def pop_size(user_input,sim): # Use case 8
     limit_pop                             = sim.world.area()
     
     # checks if he user_input is below the limit for the population (limit_pop)
-    if int(limit_pop) >= above_value_i(user_input,0):
+    if int(limit_pop) >= user_input:
         return user_input
     else:
         return pop_size(input("The value must be {} or below: ".format(limit_pop)),sim)
@@ -218,7 +218,7 @@ def qs(sim): # Use case 11
     
     sim.world.north_south_length            = above_value_i(input("Insert north-south length: "),0)
     
-    sim.rabbits.initial_size                =  pop_size(input("Rabbit populations: "),sim)
+    sim.rabbits.initial_size                = pop_size(input("Rabbit populations: "),sim)
     
     sim.foxes.initial_size                  = pop_size(input("Fox populations: "),sim)
     
