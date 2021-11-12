@@ -1,11 +1,3 @@
-
-# import os 
-# Path_to_files=os.path.realpath(__file__)
-
-# Path_to_files=Path_to_files.replace("\\"+os.path.basename(__file__),"")
-
-# os.setchdir=Path_to_files
-
 import simulation
 import reporting
 import parameters 
