@@ -6,6 +6,12 @@ Greate an empty grid
 - check if a position is empty
 - input a posi
 
+Animals:
+- track enerygy consumption pr. turn
+- track age pr. turn
+- track population in increase and decrease for size rabbits
+- track population in increase and decrease for size rabbits
+- track fox kills
 
 
 
