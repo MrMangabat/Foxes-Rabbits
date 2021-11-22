@@ -1,12 +1,12 @@
 
-Greate an empty grid
+Greate an empty grid : SIMON
 - print/visualize empty grid
 - modify the grid (placing rabbits, foxes and grass on patches(græspletter
 - check if a patch is occupied
 - check if a position is empty
 - input a posi
 
-Animals:
+Animals: ANIMALS
 - track each fox and rabbit for their coordinate
 - track enerygy consumption pr. turn
 - track age pr. turn
