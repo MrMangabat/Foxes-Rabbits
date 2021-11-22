@@ -68,5 +68,89 @@ Visualiser:
 -
 
 
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Nov 22 16:57:25 2021
+
+@author: Bruger
+"""
+
+
+# import os 
+# Path_to_files=os.path.realpath(__file__)
+
+# Path_to_files=Path_to_files.replace("\\"+os.path.basename(__file__),"")
+
+# os.setchdir=Path_to_files
+
+import simulation
+# import reporting
+import parameters 
+import sys
+import math
+import entities 
+import random
+
+sim = parameters.Simulation()
+
+world_grid      = []
+
+
+prop_list = list(range(1,sim.world.west_east_length*sim.world.north_south_length+1))
+
+udvalg = random.sample(prop_list,5)
+
+x_udvalg=int(udvalg[0]/20-0.1)
+
+y_udvalg=udvalg[0]%20-1
+
+
+
+
+for x in range(sim.world.west_east_length):
+    world_grid.append([])
+    for y in range(sim.world.north_south_length):
+        
+        world_grid[x].append(entities.Patch(x, y))
+            
+        if x==1 and y == 1 :
+            entities.Animal(sim.rabbits,world_grid[x][y] , 2, 1)
+
+
+print(udvalg)
+
+print(x_udvalg)
+
+print(y_udvalg)
+# entities.Animal(sim.fox,world_grid[1][1] , 2)
+
+# hej.patch().coordinates()
+
+# world_grid[x][y].animals()[0]  får vores dyr i den position
+
+rabit_patch = entities.Patch(1, 1)
+fox_patch = entities.Patch(1, 1)
+entities.Animal(sim.rabbits,rabit_patch , 2, 1)
+entities.Animal(sim.foxes,fox_patch , 2, 1)
+
+
+a=world_grid[1][1].animals()[0].same_species_in(rabit_patch)
+
+# rabbits
+# for i in range(sim.execution.max_steps):
+    
+    
+#     # går en tur
+#     for i in range(len(rabbits)):
+#         if len(world_grid[rabitst[i][0]][rabitst[i][1]].animals()[0])==2:
+            
+#             world_grid[rabitst[i][0]][rabitst[i][1]].animals()[0]
+        
+    
+    
+
+
+
+
 
 
