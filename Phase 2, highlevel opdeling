@@ -7,15 +7,22 @@ Greate an empty grid
 - input a posi
 
 Animals:
+- track each fox and rabbit for their coordinate
 - track enerygy consumption pr. turn
 - track age pr. turn
 - track population in increase and decrease for size rabbits
 - track population in increase and decrease for size rabbits
 - track fox kills
-
-
-
-Grid:
+- track age
+  - kill foxes from age
+  - kill rabbits from age
+- energy consumption
+  - kill rabbit from starvation
+  - kill foxes from starvation
+ 
+ - track and save all data from foxes and rabbits
+ 
+ Grid:
 - how to use north/south and west/east
 - initialize parameters randomly for simulation start
 - a list to keep track on coordinates for random deployment of species
