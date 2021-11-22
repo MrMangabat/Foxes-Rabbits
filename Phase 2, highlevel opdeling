@@ -9,34 +9,46 @@ Greate an empty grid
 
 
 
-Grid
+Grid:
+- how to use north/south and west/east
+- initialize parameters randomly for simulation start
+- a list to keep track on coordinates for random deployment of species
+
+Update:
+-
+- 
+-
+-
+
+Entities:
+-
+-
+-
+-
+
+
+Reporting:
+-
+-
+-
+-
 
 
 
-Entities
+
+
+
+Results:
 
 
 
 
-
-
-Reporting
-
+Simulation:
 
 
 
 
-Results
-
-
-
-
-Simulation
-
-
-
-
-Visualiser
+Visualiser:
 
 
 
