@@ -89,33 +89,45 @@ import sys
 import math
 import entities 
 import random
+import visualiser
+import time
+
+
 
 sim = parameters.Simulation()
 
 
-
+# patches to use same_species_in on
 fox_indicater = entities.Patch(0, 0)
 rab_indicater = entities.Patch(1, 1)
 
 
+# We input our animales
 entities.Rabbit(sim.rabbits,rab_indicater ,1)
 entities.Fox(sim.foxes,fox_indicater  ,1)
 
+x_len = sim.world.west_east_length # i len
+y_len = sim.world.north_south_length # j len
 
-
+p_r=sim.rabbits.reproduction_probability
+p_f=sim.foxes.reproduction_probability
 
 world_grid      = []
-
+pop_fail_rab    = []
+pop_fail_fox    = []
 
 prop_list = list(range(sim.world.west_east_length*sim.world.north_south_length))
 
 prop_grid = [prop_list[x:x+sim.world.west_east_length] for x in range(0, len(prop_list), sim.world.west_east_length)]
 
 
+# vi udvælger vores rabbits random 
 udvalg_rab = random.sample(prop_list,sim.rabbits.initial_size)
 
 udvalg_rab.sort()
 
+
+# vi udvælger vores foxes random 
 udvalg_fox = random.sample(prop_list,sim.foxes.initial_size)
 udvalg_fox.sort()
 
@@ -131,33 +143,47 @@ world_list = []
 # 2.5 feeding_metabolism_rate of rabbits
 # 0.9 reproduction_cost_rate 
 
-
+rab_Mage = sim.rabbits.max_age
 rab_feed = math.ceil(2.5*sim.rabbits.metabolism)
 rab_repo = math.ceil(0.9*sim.rabbits.metabolism)
 
 
 fox_repo = math.ceil(0.85 * sim.foxes.metabolism)
-
+fox_Mage = sim.foxes.max_age
 
 
 ############################ !!!!! Initialisation !!!!!! ############################
 
 
-for x in range(sim.world.west_east_length):
+
+
+
+
+
+
+
+
+
+for x in range(x_len):
     # world_grid.append([])
-    for y in range(sim.world.north_south_length):
+    pop_fail_rab.append([])
+    pop_fail_fox.append([])
+    for y in range(y_len):
         # the index used to figure out if there has to be a fox or rabbit
         index_num += 1
         
         # the patch is made
         world_list.append(entities.Patch(x, y))
         
+        pop_fail_rab[x].append(0)
+        pop_fail_fox[x].append(0)
+
         # tjek if a rabbbit has to be placed at the patch
         if len(udvalg_rab)>udvalg_rab_index and udvalg_rab[udvalg_rab_index]==index_num:
             
             # making the random value. done thos way for readability
             random_age_rab = random.randrange(0, stop=sim.rabbits.max_age, step=1)
-            random_energy_rab = random.randrange(0, stop=sim.rabbits.max_energy, step=1)
+            # random_energy_rab = random.randrange(0, stop=sim.rabbits.max_energy, step=1)
 
             # the Animale calss is made
             # entities.Animal(sim.rabbits,world_list[index_num] , random_energy_rab ,random_age_rab)
@@ -169,7 +195,7 @@ for x in range(sim.world.west_east_length):
             
             # making the random value. done thos way for readability
             random_age_fox = random.randrange(0, stop=sim.foxes.max_age, step=1)
-            random_energy_fox = random.randrange(0, stop=sim.foxes.max_energy, step=1)
+            # random_energy_fox = random.randrange(0, stop=sim.foxes.max_energy, step=1)
 
             # the Animale calss is made
             # entities.Animal(sim.foxes,world_list[index_num] , random_energy_fox ,random_age_fox)
@@ -182,23 +208,171 @@ for x in range(sim.world.west_east_length):
 world_grid = [world_list[x:x+sim.world.west_east_length] for x in range(0, len(world_list), sim.world.west_east_length)]
 
 
+def tjek_grid_rab(i,j,animal,w_grid=world_grid,x=x_len,y=y_len):
 
+    # jeg tror den her tjekker om du kan gå nogen steder hen og retunere
+    # liste af mulige kandidater og den udvalgte kandidatet
+    
+    # her er de mulige steder der kan bruges
+    x_place=[[i-1,j],[i+1,j]]
+    y_place=[[i,j-1],[i,j+1]]
+    safe=True
+    
+    place_list=[]
+    
+    # x placeringen tjekkes om den er inde for gridtet og om det samme dyr er der i forvejen
+    for l in x_place:
+        if l[0] < x and l[0] > -1:
+            if not animal.same_species_in(w_grid[l[0]][l[1]]):
+                place_list.append(l)
+    
+    # y placeringen tjekkes om den er inde for gridtet og om det samme dyr er der i forvejen hvis alt er ok så gemmes placeringen som en mulig placering
+    for l in y_place:
+        if l[1] < y and l[1] > -1:
+            if not animal.same_species_in(w_grid[l[0]][l[1]]):
+                place_list.append(l)
+
+
+            
+    # der tjekkes om der er et rovdyr, til hvis tjekket er i forhold til at føde
+    for l in place_list:
+        patch = w_grid[l[0]][l[1]]
+        if animal.predators_in(patch):
+            safe=False
+
+            # her retunere vi en tom variabe hvis dyret ikke kan gå nogen steder
+    if len(place_list)==0:
+        return None
+    else:
+        return [safe, random.sample(place_list,1)[0]]
+    
+
+
+
+
+# test2=visualiser.Batch(sim.execution.max_steps, 1000)
+
+# test2.start() 
+# for step in range(sim.execution.max_steps): 
+    
+#     test2.update(1) 
+
+# test2.stop() 
+
+# for i in world_grid:
+#     for j in i:
+#         for y in j.animals():
+#             if y.can_reproduce():
+                
+                
+
+
+    
+
+    
+                # the animale gets older
+        
+    # the grass grows
+    
+
+test=visualiser.ColourGraphics(sim.execution.max_steps, world_list, x_len, y_len, sim.execution.step_delay, True , 60)
+test.start()
+test.stop()
+test2=visualiser.Batch(10, 60) # virkerlig pas til den her function
+test2.start()
 ############################ !!!!! Update !!!!!! ############################
 
+for hmm in range(10): # til lige at tjekke om det køre 
 
-
+    # step 1 and 2
+    for x in world_list:
+        x.tick()
+        for y in x.animals():
+            # her skal dere laves et eller andet 
+            # if the rabes is to old it dies
+            # this can be done as rabbits always is the fist instants
+            y.tick()
+            # it is okay that the rabbit tris to eat even if it died as the feed function tjeks for that before beeing aplied
+            y.feed()
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    # step 3 # vi køre hele gridtet igennem
+    for x in range(x_len):
+        for y in range(y_len):
+            for ani in world_grid[x][y].animals(): # vi tage de dyr ud der er på det grass område 
+                
+                if ani.can_reproduce() and str(ani).find("Rabbit")==10: # vi tjekker om de kan formere sig og om det er kaniner
+                    hej=tjek_grid_rab(x,y,rab_indicater.animals()[0]) # function til at kontrolere 
+                    
+                    # der tjekkes om listen er tome, altså ingen mulige steder er gå hen, eller føde
+                    # der kontroleres om hej[0]== true hvilket vil sige at der ikke er nogen ræve i nærheden.
+                    # derefter testes chancen for at vi laver et barn
+                    if not None==hej and hej[0] and random.choices([True,False], cum_weights = [p_r,1],k=1)[0]:
+                        #placering bliver gemt for læsbarhednes skyld
+                        w_g=world_grid[hej[1][0]][hej[1][1]]
+                        # der laves en ny kanin
+                        entities.Rabbit(sim.rabbits,w_g,0)
+                    else:
+                        pop_fail_rab[x][y]=1
+                    
+                elif ani.can_reproduce():
+                    if random.choices([True,False], cum_weights = [p_f,1],k=1)[0]:
+                        hej=tjek_grid_rab(x,y,fox_indicater.animals()[0])
+                        if not None==hej:
+                            w_g=world_grid[hej[1][0]][hej[1][1]]
+                            entities.Fox(sim.foxes,w_g,0)
+                        else:
+                            pop_fail_fox[x][y]=1
+                                
+                    else:
+                        pop_fail_fox[x][y]=1
+                    
+                    
+                
+    
+    
+    
+    # step 4
+    for x in range(x_len):
+        for y in range(y_len):
+            for ani in world_grid[x][y].animals():
+                
+                if str(ani).find("Rabbit")==10 and ani.age() > 0 and (not ani.can_reproduce() or pop_fail_rab[x][y]==1):
+                    pop_fail_rab[x][y]=0
+                    hej=tjek_grid_rab(x,y,rab_indicater.animals()[0])
+                    if not None==hej:    
+                        w_g=world_grid[hej[1][0]][hej[1][1]]
+                        ani.move_to(w_g)
+                elif ani.age() > 0 and (not ani.can_reproduce() or pop_fail_fox[x][y]==1):
+                    hej=tjek_grid_rab(x,y,fox_indicater.animals()[0])
+                    pop_fail_fox[x][y]=0
+                    if not None==hej:   
+                        w_g=world_grid[hej[1][0]][hej[1][1]]
+                        try:
+                            ani.move_to(w_g)
+                        except:
+                            print("fail")
+                        
+                    
+                    
+                
+    test2.update(hmm)
+test2.stop()
 # Det lige gyldigt om vi bruger listen eller grid da det bare pejer på en placering og ikke den realle værdi
 
-# entities.Animal(sim.foxes,world_grid[1][1] , 2)
 
-# hej.patch().coordinates()
+test=visualiser.ColourGraphics(sim.execution.max_steps, world_list, x_len, y_len, sim.execution.step_delay, True , 60)
+test.start()
+test.stop()
 
-# world_grid[x][y].animals()[0]  får vores dyr i den position
-
-# rabit_patch = entities.Patch(1, 1)
-# fox_patch = entities.Patch(1, 1)
-# entities.Animal(sim.rabbits,rabit_patch , 2, 1)
-# entities.Animal(sim.foxes,fox_patch , 2, 1)
 
 
 # a=world_grid[1][1].animals()[0].same_species_in(rabit_patch)
