@@ -66,7 +66,6 @@ Visualiser:
 -
 -
 -
-
 # -*- coding: utf-8 -*-
 """
 Created on Mon Nov 22 16:57:25 2021
@@ -374,15 +373,3 @@ test.start()
 test.stop()
 
 
-
-# a=world_grid[1][1].animals()[0].same_species_in(rabit_patch)
-
-# rabbits
-# for i in range(sim.execution.max_steps):
-    
-    
-#     # går en tur
-#     for i in range(len(rabbits)):
-#         if len(world_grid[rabitst[i][0]][rabitst[i][1]].animals()[0])==2:
-            
-#             world_grid[rabitst[i][0]][rabitst[i][1]].animals()[0]
