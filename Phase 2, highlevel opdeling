@@ -67,7 +67,6 @@ Visualiser:
 -
 -
 
-
 # -*- coding: utf-8 -*-
 """
 Created on Mon Nov 22 16:57:25 2021
@@ -93,10 +92,24 @@ import random
 
 sim = parameters.Simulation()
 
+
+
+fox_indicater = entities.Patch(0, 0)
+rab_indicater = entities.Patch(1, 1)
+
+
+entities.Rabbit(sim.rabbits,rab_indicater ,1)
+entities.Fox(sim.foxes,fox_indicater  ,1)
+
+
+
+
 world_grid      = []
 
 
 prop_list = list(range(sim.world.west_east_length*sim.world.north_south_length))
+
+prop_grid = [prop_list[x:x+sim.world.west_east_length] for x in range(0, len(prop_list), sim.world.west_east_length)]
 
 
 udvalg_rab = random.sample(prop_list,sim.rabbits.initial_size)
@@ -115,6 +128,21 @@ udvalg_fox_index = 0
 # we start our world as a list to easyer start the whole world.
 world_list = []
 
+# 2.5 feeding_metabolism_rate of rabbits
+# 0.9 reproduction_cost_rate 
+
+
+rab_feed = math.ceil(2.5*sim.rabbits.metabolism)
+rab_repo = math.ceil(0.9*sim.rabbits.metabolism)
+
+
+fox_repo = math.ceil(0.85 * sim.foxes.metabolism)
+
+
+
+############################ !!!!! Initialisation !!!!!! ############################
+
+
 for x in range(sim.world.west_east_length):
     # world_grid.append([])
     for y in range(sim.world.north_south_length):
@@ -132,7 +160,8 @@ for x in range(sim.world.west_east_length):
             random_energy_rab = random.randrange(0, stop=sim.rabbits.max_energy, step=1)
 
             # the Animale calss is made
-            entities.Animal(sim.rabbits,world_list[index_num] , random_energy_rab ,random_age_rab)
+            # entities.Animal(sim.rabbits,world_list[index_num] , random_energy_rab ,random_age_rab)
+            entities.Rabbit(sim.rabbits,world_list[index_num],random_age_rab) 
             udvalg_rab_index += 1 
             
         # tjek if a fox has to be placed at the patch
@@ -143,12 +172,19 @@ for x in range(sim.world.west_east_length):
             random_energy_fox = random.randrange(0, stop=sim.foxes.max_energy, step=1)
 
             # the Animale calss is made
-            entities.Animal(sim.foxes,world_list[index_num] , random_energy_fox ,random_age_fox)
+            # entities.Animal(sim.foxes,world_list[index_num] , random_energy_fox ,random_age_fox)
+            entities.Fox(sim.foxes,world_list[index_num],random_age_fox) 
+
             udvalg_fox_index += 1
 
 
 
 world_grid = [world_list[x:x+sim.world.west_east_length] for x in range(0, len(world_list), sim.world.west_east_length)]
+
+
+
+############################ !!!!! Update !!!!!! ############################
+
 
 
 # Det lige gyldigt om vi bruger listen eller grid da det bare pejer på en placering og ikke den realle værdi
@@ -176,4 +212,3 @@ world_grid = [world_list[x:x+sim.world.west_east_length] for x in range(0, len(w
 #         if len(world_grid[rabitst[i][0]][rabitst[i][1]].animals()[0])==2:
             
 #             world_grid[rabitst[i][0]][rabitst[i][1]].animals()[0]
-        
