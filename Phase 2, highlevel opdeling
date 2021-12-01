@@ -85,16 +85,24 @@ import simulation
 # import reporting
 import parameters 
 import sys
+import results 
 import math
 import entities 
 import random
 import visualiser
 import time
 
+res=results.SimulationStats()
+st_fox = results.PopulationStats()
+st_rab = results.PopulationStats()
 
 
+# midlertidigt
 sim = parameters.Simulation()
 
+sim.rabbits.reproduction_min_energy=20
+
+sim.world.is_toroid
 
 # patches to use same_species_in on
 fox_indicater = entities.Patch(0, 0)
@@ -108,16 +116,21 @@ entities.Fox(sim.foxes,fox_indicater  ,1)
 x_len = sim.world.west_east_length # i len
 y_len = sim.world.north_south_length # j len
 
+x_len = sim.world.west_east_length # i len
+y_len = sim.world.north_south_length # j len
+
 p_r=sim.rabbits.reproduction_probability
 p_f=sim.foxes.reproduction_probability
 
 world_grid      = []
 pop_fail_rab    = []
 pop_fail_fox    = []
+kill_grid       = [0]*x_len*y_len
+prop_list = list(range(x_len*y_len))
 
-prop_list = list(range(sim.world.west_east_length*sim.world.north_south_length))
+prop_grid = [prop_list[x:x+x_len] for x in range(0, len(prop_list), x_len)]
 
-prop_grid = [prop_list[x:x+sim.world.west_east_length] for x in range(0, len(prop_list), sim.world.west_east_length)]
+kill_grid = [kill_grid[x:x+x_len] for x in range(0, len(kill_grid), x_len)]
 
 
 # vi udvælger vores rabbits random 
@@ -125,6 +138,7 @@ udvalg_rab = random.sample(prop_list,sim.rabbits.initial_size)
 
 udvalg_rab.sort()
 
+udvalg_all=[]
 
 # vi udvælger vores foxes random 
 udvalg_fox = random.sample(prop_list,sim.foxes.initial_size)
@@ -158,10 +172,39 @@ fox_Mage = sim.foxes.max_age
 
 
 
+#A record of the age of death of each individual.
+age_at_death_fox=[]       #
+age_at_death_rab=[]       #
+
+#A record of the average energy level across the population, in chronological order.
+avg_energy_per_step_fox=[]       #
+avg_energy_per_step_rab=[]       #
+avg_energy_per_step_all=[]
+
+#Number of individuals that died by old age.
+dead_by_old_age_fox=0       #
+dead_by_old_age_rab=0       #
+
+#Number of individuals that died by predation.
+dead_by_predation_rab=0        #
+
+# Number of individuals that died by starvation.
+dead_by_starvation_fox=0       #
+dead_by_starvation_rab=0       #
+
+#A record of the size of the (alive) population, in chronological order.
+size_per_step_fox =[]       #
+size_per_step_rab =[]       #
 
 
+# Individuals alive and ever lived
+total_rab=sim.rabbits.initial_size       #
+total_fox=sim.foxes.initial_size       #
 
+#A grid containing the total of deaths by predation per every patch in the simulation.
+kill_grid
 
+steps=sim.execution.max_steps
 
 for x in range(x_len):
     # world_grid.append([])
@@ -206,6 +249,49 @@ for x in range(x_len):
 
 world_grid = [world_list[x:x+sim.world.west_east_length] for x in range(0, len(world_list), sim.world.west_east_length)]
 
+def tjek_grid_rab_T(i,j,animal,toroid,w_grid=world_grid,x=x_len,y=y_len):
+    # jeg tror den her tjekker om du kan gå nogen steder hen og retunere
+    # liste af mulige kandidater og den udvalgte kandidatet
+    
+    # her er de mulige steder der kan bruges
+    x_place=[[i-1,j],[i+1,j]]
+    y_place=[[i,j-1],[i,j+1]]
+    safe=True
+    
+    place_list=[]
+    
+    for l in x_place:
+        if l[0] < x :
+            if not animal.same_species_in(w_grid[l[0]][l[1]]):
+                place_list.append(l)
+        else:
+            l[0]=-1
+            if not animal.same_species_in(w_grid[l[0]][l[1]]):
+                place_list.append(l)
+    
+    # y placeringen tjekkes om den er inde for gridtet og om det samme dyr er der i forvejen hvis alt er ok så gemmes placeringen som en mulig placering
+    for l in y_place:
+        if l[1] < y:
+            if not animal.same_species_in(w_grid[l[0]][l[1]]):
+                place_list.append(l)
+        else:
+            l[1]=-1
+            if not animal.same_species_in(w_grid[l[0]][l[1]]):
+                place_list.append(l)
+            
+    # der tjekkes om der er et rovdyr, til hvis tjekket er i forhold til at føde
+    for l in place_list:
+        patch = w_grid[l[0]][l[1]]
+        if animal.predators_in(patch):
+            safe=False
+
+            # her retunere vi en tom variabe hvis dyret ikke kan gå nogen steder
+    if len(place_list)==0:
+        return None
+    else:
+        return [safe, random.sample(place_list,1)[0]]
+    
+
 
 def tjek_grid_rab(i,j,animal,w_grid=world_grid,x=x_len,y=y_len):
 
@@ -248,32 +334,6 @@ def tjek_grid_rab(i,j,animal,w_grid=world_grid,x=x_len,y=y_len):
 
 
 
-
-# test2=visualiser.Batch(sim.execution.max_steps, 1000)
-
-# test2.start() 
-# for step in range(sim.execution.max_steps): 
-    
-#     test2.update(1) 
-
-# test2.stop() 
-
-# for i in world_grid:
-#     for j in i:
-#         for y in j.animals():
-#             if y.can_reproduce():
-                
-                
-
-
-    
-
-    
-                # the animale gets older
-        
-    # the grass grows
-    
-
 test=visualiser.ColourGraphics(sim.execution.max_steps, world_list, x_len, y_len, sim.execution.step_delay, True , 60)
 test.start()
 test.stop()
@@ -281,88 +341,175 @@ test2=visualiser.Batch(10, 60) # virkerlig pas til den her function
 test2.start()
 ############################ !!!!! Update !!!!!! ############################
 
-for hmm in range(10): # til lige at tjekke om det køre 
 
+runs=0
+
+for hmm in range(40): # til lige at tjekke om det køre 
+    
+    size_per_step_fox.append(0)
+    size_per_step_rab.append(0)
+    energ_rab=0
+    energ_fox=0
+    
+    udvalg_all= []
+    count=0
+    
     # step 1 and 2
     for x in world_list:
         x.tick()
         for y in x.animals():
+            
+            
+            if y.same_species_in(rab_indicater):
+                size_per_step_rab[runs]+=1
+                energ_rab +=y.energy()
+            else:
+                size_per_step_fox[runs]+=1
+                energ_fox +=y.energy()
+            try:
+                udvalg_all.index(count)
+            except:
+                udvalg_all.append(count)
+            
+            y_first=x.animals()[0]
             # her skal dere laves et eller andet 
             # if the rabes is to old it dies
             # this can be done as rabbits always is the fist instants
             y.tick()
+            if not y.is_alive() and y.same_species_in(rab_indicater):
+                ## saving the pointer to the dead rabbit. This way we can access the age and so on.
+                dead_by_old_age_rab +=1
+                
+                age_at_death_rab.append(y.age())
+
+                
+            elif not y.is_alive() and y.same_species_in(fox_indicater):
+                age_at_death_fox.append(y.age())
+                
+                dead_by_old_age_fox +=1
+
             # it is okay that the rabbit tris to eat even if it died as the feed function tjeks for that before beeing aplied
             y.feed()
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    # step 3 # vi køre hele gridtet igennem
-    for x in range(x_len):
-        for y in range(y_len):
-            for ani in world_grid[x][y].animals(): # vi tage de dyr ud der er på det grass område 
+            # kordinaterne for dette dyr gemmes således at man kan senere kun gennemgår dem 
+            if y_first.same_species_in(rab_indicater) and y_first.was_killed():
                 
-                if ani.can_reproduce() and str(ani).find("Rabbit")==10: # vi tjekker om de kan formere sig og om det er kaniner
-                    hej=tjek_grid_rab(x,y,rab_indicater.animals()[0]) # function til at kontrolere 
-                    
-                    # der tjekkes om listen er tome, altså ingen mulige steder er gå hen, eller føde
-                    # der kontroleres om hej[0]== true hvilket vil sige at der ikke er nogen ræve i nærheden.
-                    # derefter testes chancen for at vi laver et barn
-                    if not None==hej and hej[0] and random.choices([True,False], cum_weights = [p_r,1],k=1)[0]:
-                        #placering bliver gemt for læsbarhednes skyld
-                        w_g=world_grid[hej[1][0]][hej[1][1]]
-                        # der laves en ny kanin
-                        entities.Rabbit(sim.rabbits,w_g,0)
-                    else:
-                        pop_fail_rab[x][y]=1
-                    
-                elif ani.can_reproduce():
-                    if random.choices([True,False], cum_weights = [p_f,1],k=1)[0]:
-                        hej=tjek_grid_rab(x,y,fox_indicater.animals()[0])
-                        if not None==hej:
-                            w_g=world_grid[hej[1][0]][hej[1][1]]
-                            entities.Fox(sim.foxes,w_g,0)
-                        else:
-                            pop_fail_fox[x][y]=1
-                                
-                    else:
-                        pop_fail_fox[x][y]=1
-                    
-                    
+                dead_by_predation_rab += 1
                 
+                age_at_death_rab.append(y_first.age())
+                
+                kill_grid[x.coordinates()[0]][x.coordinates()[1]] += 1
+                
+            if y.energy()==0 and not y.is_alive() :
+                if y.same_species_in(rab_indicater):
+                    dead_by_starvation_rab += 1
+                    age_at_death_rab.append(y.age())
+                else:
+                    dead_by_starvation_fox += 1
+                    age_at_death_fox.append(y.age())
+                    
+            if x.animals()==[]:
+                udvalg_all.remove(count)
+                # remove from list
+        count += 1
     
+    if energ_rab==0 or size_per_step_rab[runs]==0:
+        avg_energy_per_step_rab.append(0)
+    else:
+        avg_energy_per_step_rab.append(round(energ_rab/size_per_step_rab[runs],2))
+        
+    if energ_fox==0 or size_per_step_fox[runs]==0:
+        avg_energy_per_step_fox.append(0)
+    else:
+        avg_energy_per_step_fox.append(round(energ_fox/size_per_step_fox[runs],2))
+
+    if (avg_energy_per_step_rab[-1]+avg_energy_per_step_fox[-1])==0:
+        avg_energy_per_step_all.append(0)
+    else:
+        avg_energy_per_step_rab.append(round((avg_energy_per_step_rab[-1]+avg_energy_per_step_fox[-1])/2,2))
+
+    udvalg_all_new=udvalg_all
     
+    for x in udvalg_all:
+        patch_x = world_list[x]
+        cor=patch_x.coordinates()
+        for ani in patch_x.animals(): # vi tage de dyr ud der er på det grass område 
+            
+            if ani.can_reproduce() and ani.same_species_in(rab_indicater): # vi tjekker om de kan formere sig og om det er kaniner
+                hej=tjek_grid_rab(cor[0],cor[1],rab_indicater.animals()[0]) # function til at kontrolere 
+                # der tjekkes om listen er tome, altså ingen mulige steder er gå hen, eller føde
+                # der kontroleres om hej[0]== true hvilket vil sige at der ikke er nogen ræve i nærheden.
+                # derefter testes chancen for at vi laver et barn
+                
+                ## den tager åbenbart random i hans function....
+                if not None==hej and hej[0] and random.choices([True,False], cum_weights = [p_r,1],k=1)[0]:
+                    #placering bliver gemt for læsbarhednes skyld
+                    
+                    new_xp=hej[1][0]
+                    new_yp=hej[1][1]
+                    
+                    w_g=world_grid[new_xp][new_yp]
+                    # der laves en ny kanin
+                    entities.Rabbit(sim.rabbits,w_g,0)
+                    total_rab +=1
+                    
+                    try:
+                        udvalg_all_new.index(prop_grid[new_xp][new_yp])
+                    except:
+                        udvalg_all_new.append(prop_grid[new_xp][new_yp])
+                    
+                    
+                else:
+                    pop_fail_rab[cor[0]][cor[1]]=1
+                
+            elif ani.can_reproduce():
+                if random.choices([True,False], cum_weights = [p_f,1],k=1)[0]:
+                    hej=tjek_grid_rab(cor[0],cor[1],fox_indicater.animals()[0]) 
+                    # maybe use this fox.reproduce(patch)
+                    
+                    if not None==hej:
+                        new_xp=hej[1][0]
+                        new_yp=hej[1][1]
+                        w_g=world_grid[new_xp][new_yp]
+                        entities.Fox(sim.foxes,w_g,0)
+                        total_fox +=1                        
+                        
+                        try:
+                            udvalg_all_new.index(prop_grid[new_xp][new_yp])
+                        except:
+                            udvalg_all_new.append(prop_grid[new_xp][new_yp])
+                        
+                    else:
+                        pop_fail_fox[cor[0]][cor[1]]=1
+                            
+                else:
+                    pop_fail_fox[cor[0]][cor[1]]=1
+                
+                
+            
     
     # step 4
-    for x in range(x_len):
-        for y in range(y_len):
-            for ani in world_grid[x][y].animals():
-                
-                if str(ani).find("Rabbit")==10 and ani.age() > 0 and (not ani.can_reproduce() or pop_fail_rab[x][y]==1):
-                    pop_fail_rab[x][y]=0
-                    hej=tjek_grid_rab(x,y,rab_indicater.animals()[0])
-                    if not None==hej:    
-                        w_g=world_grid[hej[1][0]][hej[1][1]]
-                        ani.move_to(w_g)
-                elif ani.age() > 0 and (not ani.can_reproduce() or pop_fail_fox[x][y]==1):
-                    hej=tjek_grid_rab(x,y,fox_indicater.animals()[0])
-                    pop_fail_fox[x][y]=0
-                    if not None==hej:   
-                        w_g=world_grid[hej[1][0]][hej[1][1]]
-                        try:
-                            ani.move_to(w_g)
-                        except:
-                            print("fail")
-                        
+    for x in udvalg_all_new:
+        patch_x = world_list[x]
+        cor=patch_x.coordinates()
+        for ani in patch_x.animals():
+            
+            if ani.same_species_in(rab_indicater) and pop_fail_rab[cor[0]][cor[1]]==1:
+                pop_fail_rab[cor[0]][cor[1]]=0
+                hej=tjek_grid_rab(cor[0],cor[1],rab_indicater.animals()[0])
+                if not None==hej:    
+                    w_g_r=world_grid[hej[1][0]][hej[1][1]]
+                    ani.move_to(w_g_r)
                     
-                    
-                
+            elif ani.same_species_in(fox_indicater) and pop_fail_fox[cor[0]][cor[1]]==1:
+                hej=tjek_grid_rab(cor[0],cor[1],fox_indicater.animals()[0])
+                pop_fail_fox[cor[0]][cor[1]]=0
+                if not None==hej:   
+                    w_g_f=world_grid[hej[1][0]][hej[1][1]]
+
+                    ani.move_to(w_g_f)
+
+    runs +=1
+
     test2.update(hmm)
 test2.stop()
 # Det lige gyldigt om vi bruger listen eller grid da det bare pejer på en placering og ikke den realle værdi
@@ -372,4 +519,87 @@ test=visualiser.ColourGraphics(sim.execution.max_steps, world_list, x_len, y_len
 test.start()
 test.stop()
 
+kill_count=0
+for x in kill_grid:
+    for i in range(10):
+        kill_count=kill_count+x.count(i)*i
+
+    
+
+
+print()
+
+print("A record of the age of death of each individual.")
+print(age_at_death_fox)     #
+print(age_at_death_rab)
+
+      
+print("\n")
+print("A record of the average energy level across the population, in chronological order.")
+print(avg_energy_per_step_fox)       #
+print(avg_energy_per_step_rab)#
+print(avg_energy_per_step_all)
+      
+print("\n")
+print("Number of individuals that died by old age.")
+print(dead_by_old_age_fox)     #
+print(dead_by_old_age_rab)       #
+
+      
+print("\n")
+print("Number of individuals that died by predation.")
+print(dead_by_predation_rab)#
+
+      
+print("\n")
+print(" Number of individuals that died by starvation.")
+print(dead_by_starvation_fox)       #
+print(dead_by_starvation_rab)       #
+
+print("\n")
+print("A record of the size of the (alive) population, in chronological order.")
+print(size_per_step_fox)
+print(size_per_step_rab)
+
+print("\n")
+print("Individuals alive and ever lived")
+print(total_fox)       #
+print(total_rab)       #
+
+
+print("\n")
+print("A grid containing the total of deaths by predation per every patch in the simulation.")
+print(kill_grid)
+print(kill_count)
+
+
+
+st_fox = results.PopulationStats()
+st_rab = results.PopulationStats()
+
+
+st_fox.age_at_death=age_at_death_fox
+st_rab.age_at_death=age_at_death_rab
+
+st_fox.avg_energy_per_step=avg_energy_per_step_fox
+st_rab.avg_energy_per_step=avg_energy_per_step_rab
+
+st_fox.dead_by_old_age=dead_by_old_age_fox
+st_rab.dead_by_old_age=dead_by_old_age_rab
+
+st_rab.dead_by_predation=dead_by_predation_rab
+
+st_fox.dead_by_starvation=dead_by_starvation_fox
+st_rab.dead_by_starvation=dead_by_starvation_rab
+
+st_fox.size_per_step=size_per_step_fox
+st_rab.size_per_step=size_per_step_rab
+
+st_fox.total=total_fox
+st_rab.total=total_rab
+
+
+
+res.kills_per_patch=kill_grid
+res.steps=sim.execution.max_steps
 
