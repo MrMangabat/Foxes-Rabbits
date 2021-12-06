@@ -1,11 +1,12 @@
 
 import time
 import random
+from Decoded_entities import Rabbit
 from visualiser import ColourGraphics
 
 import results
 import entities
-
+import parameters
 from parameters import Simulation, World
 
 
@@ -116,13 +117,11 @@ def sleep(world_grid: list[list[entities.Patch]]):
                     animal: entities.Animal
                     animal.tick()
 
-
 def feed(animals: list[entities.Animal]):
     for animal in animals:
         # Rabbit, automatically eats grass
         # Fox, check for rabbits, if rabbit on same patch it gets eaten and killed.
         animal.feed()
-
 
 def fuck(animals: list[entities.Animal],grid:list[list[entities.Patch]],parameter:World):
     newborns:list[entities.Animal] = []
@@ -134,7 +133,7 @@ def fuck(animals: list[entities.Animal],grid:list[list[entities.Patch]],paramete
                 newborn = animal.reproduce(patch)
                 if(newborn):
                     newborns.append(newborn)
-    
+
     return newborns
 
 
@@ -142,7 +141,7 @@ def fuck(animals: list[entities.Animal],grid:list[list[entities.Patch]],paramete
 def getNextPatch(
     animal: entities.Animal,
     grid: list[list[entities.Patch]],
-    parameters: World,
+    parameters: World
 ):
     # Find legal patches
     currentCoordinates = animal.patch().coordinates()
@@ -237,6 +236,8 @@ def getValidPatches(
         if type(animal) is entities.Fox:
             if patch._has_alive_fox():
                 valid = False
+            if patch._has_alive_rabbit():
+                valid = False
 
         if valid:
             validPatches.append(patch)
@@ -254,7 +255,7 @@ def get_random_movement(validPatches: list[entities.Patch]):
 def seek(
     animals: list[entities.Animal],
     grid: list[list[entities.Patch]],
-    parameters: World,
+    parameters: World
 ):
     for animal in animals:
         patch = getNextPatch(animal, grid, parameters)
@@ -338,7 +339,7 @@ def run(parameters: Simulation):
         if len(livinganimals) == 0:
             break
 
-        seek(livinganimals, world.get("world"), parameters.world,)
+        seek(livinganimals, world.get("world"), parameters.world)
 
         feed(livinganimals)
         
@@ -353,7 +354,10 @@ def run(parameters: Simulation):
     cg.stop()
 
 #Collect stats - Global
-    def collect():
+    def collect(
+        animal: entities.Animals,
+        simulation: parameters.Simulation,
+        ):
         allAnimals = world.get("animals")
         allFoxes = []
         allRabbits = []
@@ -367,29 +371,50 @@ def run(parameters: Simulation):
                 allFoxes.append(animal)
 
         #handles the collection of dead foxes and appends it to a list for dead animal
-        for fox in allFoxes:
-            if(type(fox) is entities.Rabbit.is_alive == False):
-                allDeaths.append(fox)
+        for animal in allFoxes:
+            if(type(animal) is entities.Fox.is_alive == False):
+                allDeaths.append(animal)
         
         #handles the collection of dead rabbits and appends it to a list for dead animal
-        for rabbit in allRabbits:
-            if (type(rabbit) is entities.Fox.is_alive == False):
-                allDeaths.append(rabbit)
+        for animal in allRabbits:
+            if (type(animal) is entities.Rabbit.is_alive == False):
+                allDeaths.append(animal)
         
         #age_at_death
         for animal in allDeaths:
             results.PopulationStats.age_at_death.append(animal.age)
 
-        if(type(rabbit) is entities.Rabbit.is_alive == False and entities.Rabbit.was_killed == True):
+        #death_by_predatation
+        if(type(animal) is entities.Rabbit.is_alive == False and entities.Rabbit.was_killed == True):
             results.PopulationStats.dead_by_predation.append(allDeaths.was_killed)
 
-        # # size per step
-        # for animal in allAnimals:
-        #     if
+        #dead_at_starvation
+        for foxes, rabbits in allFoxes, allRabbits:
+            if(type(animal) is simulation._max_energy <= 0):
+                results.PopulationStats.dead_by_starvation.append(foxes)
+            
+            if(type(foxes) is simulation._max_energy <= 0):
+                results.PopulationStats.dead_by_starvation.append(rabbits)
 
-#dead_by_old_age foxes, rabbits is alive was killed == false
-#dead_by_predation only rabbits, was killed == true
-#total len all animals
+        #total individuals that lives and lived once upon a time.
+        for animal in allRabbits, allFoxes, allDeaths:
+            if(type(animal) is entities.Animal.is_alive):
+                results.PopulationStats.total(animal)
+            
+            if(type(animal) is entities.Fox.is_alive):
+                results.PopulationStats.total(animal).extend(allDeaths)
+        
+        #size per step
+        .sort
+
+        #average energy per step
+
+            
+
+#dead_by_old_age foxes, rabbits is alive was killed == false - ok
+#dead_by_predation only rabbits, was killed == true - ok
+#total len all animals - 
+
 
 
 
@@ -412,6 +437,7 @@ def run(parameters: Simulation):
 ## Feed - OK
 ## Safety from foxes
 
+## make sure new babies don't move on first tick after being placed.
 ## pregnancy - ok
 
 ## is_alive - ok - hans funktioner håndterer dette intern i f.eks. entities.patch
