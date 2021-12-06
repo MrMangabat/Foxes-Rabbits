@@ -1,7 +1,7 @@
 
 import time
 import random
-from Decoded_entities import Rabbit
+
 from visualiser import ColourGraphics
 
 import results
@@ -348,68 +348,91 @@ def run(parameters: Simulation):
         world["animals"] = world.get("animals") + newborns
 
         sleep(world.get("world"))
-
+        collect()
         cg.update(tick)
 
     cg.stop()
-
+    print("simulation Complete")
 #Collect stats - Global
-    def collect(
-        animal: entities.Animals,
-        simulation: parameters.Simulation,
-        ):
-        allAnimals = world.get("animals")
-        allFoxes = []
-        allRabbits = []
-        allDeaths = []
+def collect(
+    animal: entities.Animals,
+    simulation: parameters.Simulation,
+    world
+    ):
+    
+    simStats = results.SimulationStats()
+    popStats = results.PopulationStats()
+    allAnimals = world.get("animals")
+    allFoxes = []
+    allRabbits = []
+    allDeaths = []
+    
+    ### populationStats for both rabbits and foxes are being collected ###
+    # splitting all animals into two seperate lists for foxes and rabbits
+    for animal in allAnimals:
+        if(type(animal) is entities.Rabbit):
+            allRabbits.append(animal)
 
-        # splitting all animals into two seperate lists for foxes and rabbits
-        for animal in allAnimals:
-            if(type(animal) is entities.Rabbit):
-                allRabbits.append(animal)
-            if(type(animal) is entities.Fox):
-                allFoxes.append(animal)
-
-        #handles the collection of dead foxes and appends it to a list for dead animal
-        for animal in allFoxes:
-            if(type(animal) is entities.Fox.is_alive == False):
-                allDeaths.append(animal)
-        
-        #handles the collection of dead rabbits and appends it to a list for dead animal
-        for animal in allRabbits:
-            if (type(animal) is entities.Rabbit.is_alive == False):
-                allDeaths.append(animal)
-        
-        #age_at_death
-        for animal in allDeaths:
-            results.PopulationStats.age_at_death.append(animal.age)
-
-        #death_by_predatation
-        if(type(animal) is entities.Rabbit.is_alive == False and entities.Rabbit.was_killed == True):
-            results.PopulationStats.dead_by_predation.append(allDeaths.was_killed)
-
-        #dead_at_starvation
-        for foxes, rabbits in allFoxes, allRabbits:
-            if(type(animal) is simulation._max_energy <= 0):
-                results.PopulationStats.dead_by_starvation.append(foxes)
+        if(type(animal) is entities.Fox):
+            allFoxes.append(animal)
             
-            if(type(foxes) is simulation._max_energy <= 0):
-                results.PopulationStats.dead_by_starvation.append(rabbits)
+    ##          Global collections
+    #handles the collection of dead foxes and appends it to a list for dead animal
+    for foxes, rabbits in allFoxes, allRabbits:
+        if foxes.is_alive == False:
+            allDeaths.append(foxes, rabbits)
 
-        #total individuals that lives and lived once upon a time.
-        for animal in allRabbits, allFoxes, allDeaths:
-            if(type(animal) is entities.Animal.is_alive):
-                results.PopulationStats.total(animal)
-            
-            if(type(animal) is entities.Fox.is_alive):
-                results.PopulationStats.total(animal).extend(allDeaths)
+        if  rabbits.is_alive == False:
+            allDeaths.append(foxes, rabbits)
+
+    #dead_at_starvation
+    for foxes, rabbits in allFoxes, allRabbits:
+        if foxes and simulation.max_energy <= 0:
+            popStats.dead_by_starvation.append(foxes)
+
+        if rabbits and simulation.max_energy <= 0:
+            popStats.dead_by_starvation.append(rabbits)
+
+    #age_at_death
+    for animal in allDeaths:
+        popStats.age_at_death.append(animal.age)
+
+    #total individuals that lives and lived once upon a time.
+    for animal in allRabbits, allFoxes, allDeaths:
+        if(type(animal) is entities.Animal.is_alive):
+            results.PopulationStats.total(animal)
         
-        #size per step
-        .sort
+        if(type(animal) is entities.Fox.is_alive):
+            popStats.total(animal).extend(allDeaths)
 
-        #average energy per step
+    ##          Individual collections
+    #death_by_predatation
+    if(type(animal) is entities.Rabbit.is_alive == False and entities.Rabbit.was_killed == True):
+        popStats.dead_by_predation.append(allDeaths.was_killed)
 
-            
+    #size per step ######################################### Tick skal ordnes.
+    for animal in allAnimals:
+        if(type(animal) is entities.Fox and tick == 0 or simulation.foxes.max_energy[tick] == 0):
+            results.avg_energy_per_step.append(animal)
+        else:
+            results.avg_energy_per_step.append(round())
+
+        if(type(animal) is entities.Rabbit and tick == 0 or simulation.rabbits.max_energy == 0):
+            results.avg_energy_per_step.append(animal)
+        else:
+
+    ### simulationStats for both rabbits and foxes are being collected ###
+
+
+    
+    # #average energy per step
+    # for animal in allAnimals:
+    #     if(type(animal) is entities.Fox and tick == 0):
+    #         pass
+    #     if(type(animal) is entities.Rabbit and tick = 0):
+    #         pass
+
+    
 
 #dead_by_old_age foxes, rabbits is alive was killed == false - ok
 #dead_by_predation only rabbits, was killed == true - ok
@@ -418,13 +441,13 @@ def run(parameters: Simulation):
 
 
 
-    # This grid evolves over time in discrete steps: at each tick of the simulation clock
-    # animals move.
-    # feed.
-    # reproduce.
-    # and grass grows.
+# This grid evolves over time in discrete steps: at each tick of the simulation clock
+# animals move.
+# feed.
+# reproduce.
+# and grass grows.
 
-    print("sim Complete")
+
 
 
 ### Time Goes
