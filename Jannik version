@@ -1,12 +1,12 @@
 
 import time
 import random
+from visualiser import ColourGraphics
 
-from FoxesRabbits.visualiser import ColourGraphics
-import FoxesRabbits.results as results
+import results
+import entities
 
-import FoxesRabbits.entities
-from FoxesRabbits.Decoded_parameters import Population, Simulation, World
+from parameters import Simulation, World
 
 
 
@@ -54,10 +54,10 @@ def buildWorld(parameters):
     # Building grid
     for x in range(parameters.world.west_east_length):
         # Create a row for west to east in grid.
-        row: list[FoxesRabbits.entities.Patch] = []
+        row: list[entities.Patch] = []
         # add patches to row by height.
         for y in range(parameters.world.north_south_length):
-            patch = FoxesRabbits.entities.Patch(x, y)
+            patch = entities.Patch(x, y)
             # reference variables is used to ensure both lists are updated and in sync with one another.
             world_1d.append(patch)
             row.append(patch)
@@ -80,7 +80,7 @@ def buildWorld(parameters):
         # Add animal
         if len(rabbits) < parameters.rabbits.initial_size:
             rabbits.append(
-                FoxesRabbits.entities.Rabbit(
+                entities.Rabbit(
                     parameters.rabbits,
                     world_grid[coord.get("x")][coord.get("y")],
                     random.randint(1, parameters.rabbits.max_age - 1),
@@ -90,7 +90,7 @@ def buildWorld(parameters):
             continue
         if len(foxes) < parameters.foxes.initial_size:
             foxes.append(
-                FoxesRabbits.entities.Fox(
+                entities.Fox(
                     parameters.foxes,
                     world_grid[coord.get("x")][coord.get("y")],
                     random.randint(1, parameters.foxes.max_age - 1),
@@ -106,26 +106,26 @@ def buildWorld(parameters):
 
 
 # the grass grows and animal ages.
-def sleep(world_grid: list[list[FoxesRabbits.entities.Patch]]):
+def sleep(world_grid: list[list[entities.Patch]]):
     for x in world_grid:
         for patch in x:
             patch.tick()
             if len(patch.animals()) != 0:
                 for animal in patch.animals():
                     # used inheritance to reuse function for both species
-                    animal: FoxesRabbits.entities.Animal
+                    animal: entities.Animal
                     animal.tick()
 
 
-def feed(animals: list[FoxesRabbits.entities.Animal]):
+def feed(animals: list[entities.Animal]):
     for animal in animals:
         # Rabbit, automatically eats grass
         # Fox, check for rabbits, if rabbit on same patch it gets eaten and killed.
         animal.feed()
 
 
-def fuck(animals: list[FoxesRabbits.entities.Animal],grid:list[list[FoxesRabbits.entities.Patch]],parameter:World):
-    newborns:list[FoxesRabbits.entities.Animal] = []
+def fuck(animals: list[entities.Animal],grid:list[list[entities.Patch]],parameter:World):
+    newborns:list[entities.Animal] = []
     for animal in animals:
         if animal.can_reproduce():
             # get available patch
@@ -140,8 +140,8 @@ def fuck(animals: list[FoxesRabbits.entities.Animal],grid:list[list[FoxesRabbits
 
 # for a given animal in a given world, find and evaluate next patches for movement.
 def getNextPatch(
-    animal: FoxesRabbits.entities.Animal,
-    grid: list[list[FoxesRabbits.entities.Patch]],
+    animal: entities.Animal,
+    grid: list[list[entities.Patch]],
     parameters: World,
 ):
     # Find legal patches
@@ -220,21 +220,21 @@ def getNextPatch(
 
 def getValidPatches(
     coords: list[list[int]],
-    animal: FoxesRabbits.entities.Animal,
-    grid: list[list[FoxesRabbits.entities.Patch]],
+    animal: entities.Animal,
+    grid: list[list[entities.Patch]],
 ):
     validPatches = []
     for coord in coords:
-        patch: FoxesRabbits.entities.Patch = getPatch(coord, grid)
+        patch: entities.Patch = getPatch(coord, grid)
 
         valid = True
-        if type(animal) is FoxesRabbits.entities.Rabbit:
+        if type(animal) is entities.Rabbit:
             if patch._has_alive_fox():
                 valid = False
             if patch._has_alive_rabbit():
                 valid = False
 
-        if type(animal) is FoxesRabbits.entities.Fox:
+        if type(animal) is entities.Fox:
             if patch._has_alive_fox():
                 valid = False
 
@@ -244,16 +244,16 @@ def getValidPatches(
     return validPatches
 
 
-def getPatch(coord: list[int], grid: list[list[FoxesRabbits.entities.Patch]]):
+def getPatch(coord: list[int], grid: list[list[entities.Patch]]):
     return grid[coord[0]][coord[1]]
 
 
-def get_random_movement(validPatches: list[FoxesRabbits.entities.Patch]):
+def get_random_movement(validPatches: list[entities.Patch]):
     return validPatches[random.randint(0, len(validPatches) - 1)]
 
 def seek(
-    animals: list[FoxesRabbits.entities.Animal],
-    grid: list[list[FoxesRabbits.entities.Patch]],
+    animals: list[entities.Animal],
+    grid: list[list[entities.Patch]],
     parameters: World,
 ):
     for animal in animals:
@@ -320,7 +320,7 @@ def run(parameters: Simulation):
     )
     ## rabbits dont stack, foxes dont stack, foxes stacks rabbits
 
-    statsSimulation = FoxesRabbits.results.SimulationStats()
+    statsSimulation = results.SimulationStats()
 
     cg.start()
     # Per tick
@@ -331,7 +331,7 @@ def run(parameters: Simulation):
         # remove dead ones.
         livinganimals = []
         for animal in world.get("animals"):
-            animal: FoxesRabbits.entities.Animal
+            animal: entities.Animal
             if animal.is_alive():
                 livinganimals.append(animal)
 
@@ -361,31 +361,31 @@ def run(parameters: Simulation):
 
         # splitting all animals into two seperate lists for foxes and rabbits
         for animal in allAnimals:
-            if(type(animal) is FoxesRabbits.entities.Rabbit):
+            if(type(animal) is entities.Rabbit):
                 allRabbits.append(animal)
-            if(type(animal) is FoxesRabbits.entities.Fox):
+            if(type(animal) is entities.Fox):
                 allFoxes.append(animal)
 
         #handles the collection of dead foxes and appends it to a list for dead animal
         for fox in allFoxes:
-            if(type(fox) is FoxesRabbits.entities.Rabbit.is_alive == False):
+            if(type(fox) is entities.Rabbit.is_alive == False):
                 allDeaths.append(fox)
         
         #handles the collection of dead rabbits and appends it to a list for dead animal
         for rabbit in allRabbits:
-            if (type(rabbit) is FoxesRabbits.entities.Fox.is_alive == False):
+            if (type(rabbit) is entities.Fox.is_alive == False):
                 allDeaths.append(rabbit)
         
         #age_at_death
         for animal in allDeaths:
             results.PopulationStats.age_at_death.append(animal.age)
 
-        if(type(rabbit) is FoxesRabbits.entities.Rabbit.is_alive == False and FoxesRabbits.entities.Rabbit.was_killed == True):
+        if(type(rabbit) is entities.Rabbit.is_alive == False and entities.Rabbit.was_killed == True):
             results.PopulationStats.dead_by_predation.append(allDeaths.was_killed)
 
-        # size per step
-        for animal in allAnimals:
-            if FoxesRabbits
+        # # size per step
+        # for animal in allAnimals:
+        #     if
 
 #dead_by_old_age foxes, rabbits is alive was killed == false
 #dead_by_predation only rabbits, was killed == true
