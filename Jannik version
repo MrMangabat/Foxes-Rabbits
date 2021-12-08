@@ -1,4 +1,3 @@
-
 import time
 import random
 
@@ -13,8 +12,8 @@ from parameters import Simulation, World
 
 
 # get koordinate correponding to an id number
-# assumes that id number starts at 1.
-def getCoordinate(id, grid: list[list]):
+# assumes that id number starts at 0.
+def getCoordinate(id, grid: list[entities.Patch])->dir:
     """[summary]
 
     Args:
@@ -24,22 +23,12 @@ def getCoordinate(id, grid: list[list]):
     Returns:
         [type]: [description]
     """
-    grid_x = len(grid)
-    grid_y = len(grid[0])
-
-    xIndex = 0
-
-    for xAxis in range(grid_x):
-        if id < (xAxis + 1) * grid_y:
-            xIndex = xAxis
-            break
-
-    yIndex = (id - ((xIndex) * grid_y)) - 1
-
-    return {"x": xIndex, "y": yIndex}
+    corrd=grid[id].coordinates()
+    return {"x": corrd[0], 
+            "y": corrd[1]}
 
 
-def buildWorld(parameters):
+def buildWorld(parameters)->dir:
     """[summary]
 
     Args:
@@ -77,80 +66,132 @@ def buildWorld(parameters):
 
     # add animals
     for id in patchIds:
-        coord = getCoordinate(id, world_grid)
         # Add animal
         if len(rabbits) < parameters.rabbits.initial_size:
             rabbits.append(
                 entities.Rabbit(
                     parameters.rabbits,
-                    world_grid[coord.get("x")][coord.get("y")],
-                    random.randint(1, parameters.rabbits.max_age - 1),
+                    world_1d[id],
+                    random.randint(0, parameters.rabbits.max_age),
                 )
             )
             # skip iteration in loop.
-            continue
-        if len(foxes) < parameters.foxes.initial_size:
+        elif len(foxes) < parameters.foxes.initial_size:
             foxes.append(
                 entities.Fox(
                     parameters.foxes,
-                    world_grid[coord.get("x")][coord.get("y")],
-                    random.randint(1, parameters.foxes.max_age - 1),
+                    world_1d[id],
+                    random.randint(0, parameters.foxes.max_age),
                 )
             )
-            continue
 
     return {
-        "world": world_grid,
-        "world_1d": world_1d,
-        "animals": rabbits + foxes,
+        "world"     : world_grid,
+        "world_1d"  : world_1d,
+        "animals"   : rabbits + foxes,
+        "animal_index" : [],
+        "rabbits"   : rabbits,
+        "foxes"     : foxes,
+        "all_deads" : []
     }
 
 
-# the grass grows and animal ages.
-def sleep(world_grid: list[list[entities.Patch]]):
-    for x in world_grid:
-        for patch in x:
-            patch.tick()
-            if len(patch.animals()) != 0:
-                for animal in patch.animals():
-                    # used inheritance to reuse function for both species
-                    animal: entities.Animal
-                    animal.tick()
+# the grass grows, animal ages and the dead is collected.
+def sleep(world_dir)-> dir:
+    world_dir["animals"]    =[]
+    world_dir["animal_index"]=[]
 
-def feed(animals: list[entities.Animal]):
-    for animal in animals:
-        # Rabbit, automatically eats grass
-        # Fox, check for rabbits, if rabbit on same patch it gets eaten and killed.
-        animal.feed()
+    index=0
+    for patch in world_dir.get("world_1d"):
+        patch.tick()
+        for animal in patch.animals():
+            # used inheritance to reuse function for both species
+            animal: entities.Animal
+            animal.tick()
+            # The dead is collected in our woorld dictuanosjfbapuybdsf 
+            if not animal.is_alive():
+                world_dir["all_deads"].append(animal)
+            elif animal.is_alive():
+                world_dir["animals"].append(animal)
 
-def fuck(animals: list[entities.Animal],grid:list[list[entities.Patch]],parameter:World):
-    newborns:list[entities.Animal] = []
-    for animal in animals:
+
+        index += 1
+    return world_dir
+
+def feed(world_dir)->dir:
+    
+    living_animals=[]
+
+    for animal in world_dir["animals"]:
+    # Rabbit, automatically eats grass
+    # Fox, check for rabbits, if rabbit on same patch it gets eaten and killed.
+        if type(animal) is entities.Fox : 
+            animal.feed()
+        if type(animal) is entities.Fox and animal.is_alive():
+            living_animals.append(animal)
+        else:
+            world_dir["all_deads"].append(animal)
+            
+
+        
+    for animal in world_dir["animals"]:
+    # Rabbit, automatically eats grass
+    # Fox, check for rabbits, if rabbit on same patch it gets eaten and killed.
+        if type(animal) is entities.Rabbit : 
+            animal.feed()
+        if type(animal) is entities.Rabbit and animal.is_alive():
+            living_animals.append(animal)
+        else:
+            world_dir["all_deads"].append(animal)
+   
+            
+
+    world_dir["animals"]=living_animals 
+    return world_dir
+
+def Breeding(world_dir: dir,
+    parameter:World,res)->list[entities.Animal]:
+    animale_to_move=[]
+    grid=world_dir.get("world")
+    
+    for animal in  world_dir["animals"]:
+        if not animal.is_alive():
+            print("hej")
+
         if animal.can_reproduce():
             # get available patch
-            patch = getNextPatch(animal,grid,parameter)
-            if(patch):
-                newborn = animal.reproduce(patch)
-                if(newborn):
-                    newborns.append(newborn)
-
-    return newborns
+            validMovement = getNextPatch(animal,parameter)
+            valid_coord = getValidPatches(validMovement, animal, grid, True)
+            
+            if(valid_coord):
+                [x,y]=random.sample(valid_coord,1)[0]
+                newborn = animal.reproduce(grid[x][y])
+                if(newborn==None):
+                    animale_to_move.append(animal)
+                    if type(animal) is entities.Rabbit:
+                        res.rabbits.total +=1
+                    else:
+                        res.foxes.total +=1
+            else:
+                animale_to_move.append(animal)
+        else: 
+            animale_to_move.append(animal)
+    return animale_to_move, res
 
 
 # for a given animal in a given world, find and evaluate next patches for movement.
 def getNextPatch(
-    animal: entities.Animal,
-    grid: list[list[entities.Patch]],
-    parameters: World
-):
+    animal      : entities.Animal,
+    parameters  : World
+    ):
     # Find legal patches
-    currentCoordinates = animal.patch().coordinates()
+    [x,y] = animal.patch().coordinates()
 
     movableCoords = {
-        "north": [currentCoordinates[0], currentCoordinates[1] + 1],
-        "south": [currentCoordinates[0], currentCoordinates[1] - 1],
-        "west": [currentCoordinates[0] - 1, currentCoordinates[1]],
-        "east": [currentCoordinates[0] + 1, currentCoordinates[1]],
+        "north" : [x, y + 1],
+        "south" : [x, y - 1],
+        "west"  : [x - 1, y],
+        "east"  : [x + 1, y],
     }
 
     # movableCoords = [[-1,4],[0,3],[0,5]] # husk alle sider
@@ -161,134 +202,227 @@ def getNextPatch(
         # snake world
         # each key in our dictionary do not support going around the grid more than once.
         for key in movableCoords:
-            # [x,y]
-            coord = movableCoords[key]
-            # handles x-axis
-            x = coord[0]
-            if x < 0:
-                # -1 + 5 = 4. maks index on the opposite side.
-                x = x + parameters._west_east_length
-            if x >= parameters._west_east_length:
-                # 5 - 5 = 0. first index on opposite side.
-                x = x - parameters._west_east_length
-            # save x-axis
-            coord[0] = x
-
-            # handles y-axis
-            y = coord[1]
-            if y < 0:
-                # -1 + 5 = 4. maks index on the opposite side.
-                y = y + parameters._north_south_length
-            if y >= parameters._north_south_length:
-                # 5 - 5 = 0. first index on opposite side.
-                y = y - parameters._north_south_length
-            coord[1] = y
+            # [x,y] handles the x-axis and y-axis
+            [x,y] = movableCoords[key]
+            if x == parameters._west_east_length:
+                x = 0
+            if y == parameters._north_south_length:
+                y = 0
             # collect valid patch coord.
-            validMovement.append(coord)
+            validMovement.append([x,y])
     else:
         # island world
         for key in movableCoords:
             # [x,y]
-            coord = movableCoords[key]
+            [x,y] = movableCoords[key]
             # handles x-axis
-            valid = 1
+            valid = True
 
-            x = coord[0]
-            if x < 0:
-                valid = 0
-            if x >= parameters._west_east_length:
-                valid = 0
+            if x < 0 or x == parameters._west_east_length:
+                valid = False
             # handles y-axis
-            y = coord[1]
-            if y < 0:
-                valid = 0
-            if y >= parameters._north_south_length:
-                valid = 0
+            if y < 0 or y == parameters._north_south_length:
+                valid = False
 
-            if valid == 1:
-                validMovement.append(coord)
+            if valid:
+                validMovement.append([x,y])
 
-    validPatches = getValidPatches(validMovement, animal, grid)
-    if len(validPatches) == 0:
-        return None
-    if len(validPatches) == 1:
-        return validPatches[0]
+    if len(validMovement) == 0:
+        return []
     else:
-        return get_random_movement(validPatches)
+        return validMovement
 
 
 def getValidPatches(
     coords: list[list[int]],
     animal: entities.Animal,
     grid: list[list[entities.Patch]],
-):
+    breed: bool,
+    ):
     validPatches = []
-    for coord in coords:
-        patch: entities.Patch = getPatch(coord, grid)
+    for [x,y] in coords:
+        
+        patch: entities.Patch = grid[x][y]
 
         valid = True
-        if type(animal) is entities.Rabbit:
+        All_valid = True
+       
+        if type(animal) is entities.Rabbit and breed:
             if patch._has_alive_fox():
-                valid = False
+                All_valid = False
             if patch._has_alive_rabbit():
                 valid = False
-
-        if type(animal) is entities.Fox:
-            if patch._has_alive_fox():
-                valid = False
+        elif type(animal) is entities.Rabbit:
             if patch._has_alive_rabbit():
                 valid = False
+        elif type(animal) is entities.Fox:
+            if patch._has_alive_fox():
+                valid = False
 
+        if not All_valid:
+            return []
         if valid:
-            validPatches.append(patch)
+            validPatches.append([x,y])
+        
 
     return validPatches
 
 
-def getPatch(coord: list[int], grid: list[list[entities.Patch]]):
-    return grid[coord[0]][coord[1]]
-
-
-def get_random_movement(validPatches: list[entities.Patch]):
-    return validPatches[random.randint(0, len(validPatches) - 1)]
-
-def seek(
-    animals: list[entities.Animal],
+def Move_animals(
+    animale_to_move: list[entities.Animal],
     grid: list[list[entities.Patch]],
     parameters: World
-):
-    for animal in animals:
-        patch = getNextPatch(animal, grid, parameters)
-        if patch:
-            animal.move_to(patch)
+    ):
+    for animal in animale_to_move:
+        validMovement = getNextPatch(animal,parameters)
+        valid_coord = getValidPatches(validMovement, animal, grid, False)
+
+        if valid_coord:
+            [x,y]=random.sample(valid_coord,1)[0]
+            if not animal.is_alive():
+                print("hej")
+            animal.move_to(grid[x][y])
+
 
 def rabbitsYouKnow():
     for times in range(7):
         print(
-            """
-Reproducing, please wait..
-     \\\\
-\\\\_   \\\\
-(')    \\\\_
-/ )=.---(')
-o( )o( )_-\_ )"""
+                """
+    Reproducing, please wait..
+        \\\\
+    \\\\_   \\\\
+    (')    \\\\_
+    / )=.---(')
+    o( )o( )_-\_ )"""
         )
         time.sleep(0.1)
         print(chr(27) + "[2J")
 
         print(
-            """
-Reproducing, please wait...
-       \\\\
-\\\\_     \\\\
-(')      \\\\_
-/ )=  .---(')
-o( )o  ( )_-\_ )"""
+                """
+    Reproducing, please wait...
+        \\\\
+    \\\\_     \\\\
+    (')      \\\\_
+    / )=  .---(')
+    o( )o  ( )_-\_ )"""
         )
 
         time.sleep(0.1)
         print(chr(27) + "[2J")
 
+def list_to_grid(list_1: list,colum: int)->list:
+    
+    grid_1 = [list_1[x:x+colum] for x in range(0, len(list_1), colum)]
+    return grid_1
+
+def dead_animals(world,res)->results.SimulationStats:
+
+    for animal in world["all_deads"]:
+
+        if type(animal) is entities.Rabbit:
+            if animal.was_killed():
+                res.rabbits.age_at_death.append(animal.age())
+                res.rabbits.dead_by_predation += 1
+
+                # Getting the coordinats where the rabbit was killed
+                [x,y]=animal.patch().coordinates()
+                res.kills_per_patch[x][y] += 1
+            elif animal.energy()==0:
+                res.rabbits.age_at_death.append(animal.age())
+                res.rabbits.dead_by_starvation += 1
+            else:
+                res.rabbits.age_at_death.append(animal.age())
+                res.rabbits.dead_by_old_age += 1
+        else:
+            if animal.energy()==0:
+                res.foxes.age_at_death.append(animal.age())
+                res.foxes.dead_by_starvation += 1
+            else:
+                res.foxes.age_at_death.append(animal.age())
+                res.foxes.dead_by_old_age += 1
+    return res
+
+def alive_animals(world,res)->results.SimulationStats:
+    energy_rab=0
+    energy_rab_num=0
+
+    energy_fox=0
+    energy_fox_num=0
+    for animal in world.get("animals"):
+        if type(animal) is entities.Rabbit:
+            energy_rab += animal.energy()
+            energy_rab_num +=1
+        else:
+            energy_fox += animal.energy()
+            energy_fox_num +=1
+
+
+    res.rabbits.size_per_step.append(energy_rab_num)
+    res.foxes.size_per_step.append(energy_fox_num)    
+
+    if energy_rab_num!=0:
+        res.rabbits.avg_energy_per_step.append(round(energy_rab/energy_rab_num,2))
+    else:
+        res.rabbits.avg_energy_per_step.append(0)
+    if energy_fox_num!=0:
+        res.foxes.avg_energy_per_step.append(round(energy_fox/energy_fox_num,2))
+    else:
+        res.foxes.avg_energy_per_step.append(0)
+
+    # if res.rabbits.avg_energy_per_step[-1]==0 and res.foxes.avg_energy_per_step[-1]==0:
+    #     res.avg_energy_per_step.append(0)
+    # elif res.rabbits.avg_energy_per_step[-1]==0:
+    #     res.avg_energy_per_step.append(res.foxes.avg_energy_per_step[-1])
+    # elif res.foxes.avg_energy_per_step[-1]==0:
+    #     res.avg_energy_per_step.append(res.rabbits.avg_energy_per_step[-1])
+    # else:
+    #     res.avg_energy_per_step.append(res.rabbits.avg_energy_per_step[-1]+res.foxes.avg_energy_per_step[-1])/2
+
+    return res
+
+def print_theshit(res):
+    print("A record of the age of death of each individual.")
+    print(res.foxes.age_at_death)     #
+    print(res.rabbits.age_at_death)
+    
+          
+    print("\n")
+    print("A record of the average energy level across the population, in chronological order.")
+    print(res.foxes.avg_energy_per_step)       #
+    print(res.rabbits.avg_energy_per_step)#
+    print(res.avg_energy_per_step)
+          
+    print("\n")
+    print("Number of individuals that died by old age.")
+    print(res.foxes.dead_by_old_age)     #
+    print(res.rabbits.dead_by_old_age)       #
+    
+          
+    print("\n")
+    print("Number of individuals that died by predation.")
+    print(res.rabbits.dead_by_predation)#
+    
+          
+    print("\n")
+    print(" Number of individuals that died by starvation.")
+    print(res.foxes.dead_by_starvation)       #
+    print(res.rabbits.dead_by_starvation)       #
+    
+    print("\n")
+    print("A record of the size of the (alive) population, in chronological order.")
+    print(res.foxes.size_per_step)
+    print(res.rabbits.size_per_step)
+    
+    print("\n")
+    print("Individuals alive and ever lived")
+    print(res.foxes.total)       #
+    print(res.rabbits.total)       #
+    
+    
+    print("\n")
+    print("A grid containing the total of deaths by predation per every patch in the simulation.")
+    print(res.kills_per_patch)
 
 def run(parameters: Simulation):
     """
@@ -311,116 +445,114 @@ def run(parameters: Simulation):
 
     # Build World and Popoulate World
     world = buildWorld(parameters)
+    parameters.execution.max_steps=100
 
     cg = ColourGraphics(
         parameters.execution.max_steps,
         world.get("world_1d"),
         parameters.world.west_east_length,
         parameters.world.north_south_length,
-        parameters.execution.step_delay,
-    )
+        0.1
+        )
     ## rabbits dont stack, foxes dont stack, foxes stacks rabbits
 
-    statsSimulation = results.SimulationStats()
+    res = results.SimulationStats()
+    alive_animals(world,res)
+    res.rabbits.total = parameters.rabbits.initial_size 
+    res.foxes.total = parameters.foxes.initial_size 
+
+    kill_list=[0]*parameters.world.west_east_length*parameters.world.north_south_length
+    kill_grid=list_to_grid(kill_list,parameters.world.north_south_length)
+    res.kills_per_patch=kill_grid
 
     cg.start()
     # Per tick
-    for tick in range(parameters.execution.max_steps):
-
-        # collect
-        
-        # remove dead ones.
-        livinganimals = []
-        for animal in world.get("animals"):
-            animal: entities.Animal
-            if animal.is_alive():
-                livinganimals.append(animal)
-
-        if len(livinganimals) == 0:
-            break
-
-        seek(livinganimals, world.get("world"), parameters.world)
-
-        feed(livinganimals)
-        
-        newborns = fuck(livinganimals,world.get("world"),parameters.world)
-        #add newborns to list of all animals, dead or alive.
-        world["animals"] = world.get("animals") + newborns
-
-        sleep(world.get("world"))
-        collect()
+    tick=0
+    while len(world.get("animals"))!=0 and tick < parameters.execution.max_steps:
         cg.update(tick)
 
+        world                   = sleep(world)
+        world                   = feed(world)
+
+        [Moveable_animals,res]  = Breeding(world,parameters.world,res)
+        Move_animals(Moveable_animals, world.get("world"), parameters.world)
+        res = alive_animals(world,res)
+        tick += 1
+
+    res = dead_animals(world,res)
     cg.stop()
     print("simulation Complete")
+    print_theshit(res)
+
+sim=Simulation()
+run(sim)
 #Collect stats - Global
-def collect(
-    animal: entities.Animals,
-    simulation: parameters.Simulation,
-    world
-    ):
+# def collect(
+#     animal: entities.Animal,
+#     simulation: parameters.Simulation,
+#     world
+#     ):
     
-    simStats = results.SimulationStats()
-    popStats = results.PopulationStats()
-    allAnimals = world.get("animals")
-    allFoxes = []
-    allRabbits = []
-    allDeaths = []
+#     simStats = results.SimulationStats()
+#     popStats = results.PopulationStats()
+#     allAnimals = world.get("animals")
+#     allFoxes = []
+#     allRabbits = []
+#     allDeaths = []
     
-    ### populationStats for both rabbits and foxes are being collected ###
-    # splitting all animals into two seperate lists for foxes and rabbits
-    for animal in allAnimals:
-        if(type(animal) is entities.Rabbit):
-            allRabbits.append(animal)
+#     ### populationStats for both rabbits and foxes are being collected ###
+#     # splitting all animals into two seperate lists for foxes and rabbits
+#     for animal in allAnimals:
+#         if(type(animal) is entities.Rabbit):
+#             allRabbits.append(animal)
 
-        if(type(animal) is entities.Fox):
-            allFoxes.append(animal)
+#         if(type(animal) is entities.Fox):
+#             allFoxes.append(animal)
             
-    ##          Global collections
-    #handles the collection of dead foxes and appends it to a list for dead animal
-    for foxes, rabbits in allFoxes, allRabbits:
-        if foxes.is_alive == False:
-            allDeaths.append(foxes, rabbits)
+#     ##          Global collections
+#     #handles the collection of dead foxes and appends it to a list for dead animal
+#     for foxes, rabbits in allFoxes, allRabbits:
+#         if foxes.is_alive == False:
+#             allDeaths.append(foxes, rabbits)
 
-        if  rabbits.is_alive == False:
-            allDeaths.append(foxes, rabbits)
+#         if  rabbits.is_alive == False:
+#             allDeaths.append(foxes, rabbits)
 
-    #dead_at_starvation
-    for foxes, rabbits in allFoxes, allRabbits:
-        if foxes and simulation.max_energy <= 0:
-            popStats.dead_by_starvation.append(foxes)
+#     #dead_at_starvation
+#     for foxes, rabbits in allFoxes, allRabbits:
+#         if foxes and simulation.max_energy <= 0:
+#             popStats.dead_by_starvation.append(foxes)
 
-        if rabbits and simulation.max_energy <= 0:
-            popStats.dead_by_starvation.append(rabbits)
+#         if rabbits and simulation.max_energy <= 0:
+#             popStats.dead_by_starvation.append(rabbits)
 
-    #age_at_death
-    for animal in allDeaths:
-        popStats.age_at_death.append(animal.age)
+#     #age_at_death
+#     for animal in allDeaths:
+#         popStats.age_at_death.append(animal.age)
 
-    #total individuals that lives and lived once upon a time.
-    for animal in allRabbits, allFoxes, allDeaths:
-        if(type(animal) is entities.Animal.is_alive):
-            results.PopulationStats.total(animal)
+#     #total individuals that lives and lived once upon a time.
+#     for animal in allRabbits, allFoxes, allDeaths:
+#         if(type(animal) is entities.Animal.is_alive):
+#             results.PopulationStats.total(animal)
         
-        if(type(animal) is entities.Fox.is_alive):
-            popStats.total(animal).extend(allDeaths)
+#         if(type(animal) is entities.Fox.is_alive):
+#             popStats.total(animal).extend(allDeaths)
 
-    ##          Individual collections
-    #death_by_predatation
-    if(type(animal) is entities.Rabbit.is_alive == False and entities.Rabbit.was_killed == True):
-        popStats.dead_by_predation.append(allDeaths.was_killed)
+#     ##          Individual collections
+#     #death_by_predatation
+#     if(type(animal) is entities.Rabbit.is_alive == False and entities.Rabbit.was_killed == True):
+#         popStats.dead_by_predation.append(allDeaths.was_killed)
 
-    #size per step ######################################### Tick skal ordnes.
-    for animal in allAnimals:
-        if(type(animal) is entities.Fox and tick == 0 or simulation.foxes.max_energy[tick] == 0):
-            results.avg_energy_per_step.append(animal)
-        else:
-            results.avg_energy_per_step.append(round())
+#     #size per step ######################################### Tick skal ordnes.
+#     for animal in allAnimals:
+#         if(type(animal) is entities.Fox and tick == 0 or simulation.foxes.max_energy[tick] == 0):
+#             results.avg_energy_per_step.append(animal)
+#         else:
+#             results.avg_energy_per_step.append(round())
 
-        if(type(animal) is entities.Rabbit and tick == 0 or simulation.rabbits.max_energy == 0):
-            results.avg_energy_per_step.append(animal)
-        else:
-
+#         if(type(animal) is entities.Rabbit and tick == 0 or simulation.rabbits.max_energy == 0):
+#             results.avg_energy_per_step.append(animal)
+            
     ### simulationStats for both rabbits and foxes are being collected ###
 
 
