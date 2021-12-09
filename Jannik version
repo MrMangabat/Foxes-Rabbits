@@ -99,23 +99,17 @@ def buildWorld(parameters)->dir:
 # the grass grows, animal ages and the dead is collected.
 def sleep(world_dir)-> dir:
     world_dir["animals"]    =[]
-    world_dir["animal_index"]=[]
-
-    index=0
     for patch in world_dir.get("world_1d"):
         patch.tick()
         for animal in patch.animals():
             # used inheritance to reuse function for both species
-            animal: entities.Animal
             animal.tick()
             # The dead is collected in our woorld dictuanosjfbapuybdsf 
             if not animal.is_alive():
                 world_dir["all_deads"].append(animal)
             elif animal.is_alive():
                 world_dir["animals"].append(animal)
-
-
-        index += 1
+                
     return world_dir
 
 def feed(world_dir)->dir:
@@ -129,7 +123,7 @@ def feed(world_dir)->dir:
             animal.feed()
         if type(animal) is entities.Fox and animal.is_alive():
             living_animals.append(animal)
-        else:
+        elif type(animal) is entities.Fox:
             world_dir["all_deads"].append(animal)
             
 
@@ -141,7 +135,7 @@ def feed(world_dir)->dir:
             animal.feed()
         if type(animal) is entities.Rabbit and animal.is_alive():
             living_animals.append(animal)
-        else:
+        elif type(animal) is entities.Rabbit:
             world_dir["all_deads"].append(animal)
    
             
@@ -155,9 +149,6 @@ def Breeding(world_dir: dir,
     grid=world_dir.get("world")
     
     for animal in  world_dir["animals"]:
-        if not animal.is_alive():
-            print("hej")
-
         if animal.can_reproduce():
             # get available patch
             validMovement = getNextPatch(animal,parameter)
@@ -279,8 +270,6 @@ def Move_animals(
 
         if valid_coord:
             [x,y]=random.sample(valid_coord,1)[0]
-            if not animal.is_alive():
-                print("hej")
             animal.move_to(grid[x][y])
 
 
@@ -370,14 +359,14 @@ def alive_animals(world,res)->results.SimulationStats:
     else:
         res.foxes.avg_energy_per_step.append(0)
 
-    # if res.rabbits.avg_energy_per_step[-1]==0 and res.foxes.avg_energy_per_step[-1]==0:
-    #     res.avg_energy_per_step.append(0)
-    # elif res.rabbits.avg_energy_per_step[-1]==0:
-    #     res.avg_energy_per_step.append(res.foxes.avg_energy_per_step[-1])
-    # elif res.foxes.avg_energy_per_step[-1]==0:
-    #     res.avg_energy_per_step.append(res.rabbits.avg_energy_per_step[-1])
-    # else:
-    #     res.avg_energy_per_step.append(res.rabbits.avg_energy_per_step[-1]+res.foxes.avg_energy_per_step[-1])/2
+    if res.rabbits.avg_energy_per_step[-1]==0 and res.foxes.avg_energy_per_step[-1]==0:
+        res.avg_energy_per_step.append(0)
+    elif res.rabbits.avg_energy_per_step[-1]==0:
+        res.avg_energy_per_step.append(res.foxes.avg_energy_per_step[-1])
+    elif res.foxes.avg_energy_per_step[-1]==0:
+        res.avg_energy_per_step.append(res.rabbits.avg_energy_per_step[-1])
+    else:
+        res.avg_energy_per_step.append(round((res.rabbits.avg_energy_per_step[-1]+res.foxes.avg_energy_per_step[-1])/2,2))
 
     return res
 
@@ -445,7 +434,7 @@ def run(parameters: Simulation):
 
     # Build World and Popoulate World
     world = buildWorld(parameters)
-    parameters.execution.max_steps=100
+    parameters.execution.max_steps=10
 
     cg = ColourGraphics(
         parameters.execution.max_steps,
@@ -481,9 +470,12 @@ def run(parameters: Simulation):
 
     res = dead_animals(world,res)
     cg.stop()
+
+    res.steps=tick
+
     print("simulation Complete")
     print_theshit(res)
-
+    print(len(world["all_deads"]))
 sim=Simulation()
 run(sim)
 #Collect stats - Global
