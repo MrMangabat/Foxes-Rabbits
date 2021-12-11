@@ -3,10 +3,10 @@ import random
 import results
 import entities
 import parameters 
-from typing import Tuple, List
+from typing import Tuple , List
 from visualiser import ColourGraphics
 
-def buildWorld(parameters: parameters.Simulation)->dir: ## UC 1 
+def buildWorld(parameters: parameters.Simulation)->dir: # UC 1
     """[Initialisation of the world in acording to the pdf phase 2. Here the information is saved in af dictionary for quick acces to all the variables]
 
     Args:
@@ -22,7 +22,7 @@ def buildWorld(parameters: parameters.Simulation)->dir: ## UC 1
     # Building grid
     for x in range(parameters.world.west_east_length):
         # Create a row for west to east in grid.
-        row: list[entities.Patch] = []
+        row = []
         # add patches to row by height.
         for y in range(parameters.world.north_south_length):
             patch = entities.Patch(x, y)
@@ -69,12 +69,12 @@ def buildWorld(parameters: parameters.Simulation)->dir: ## UC 1
         "animals"   : rabbits + foxes,
     }
 
-def list_to_grid(list_1: List[int],colum: int)->List[List[int]]: ## UC 2
+def list_to_grid(list_1: List[int],colum: int)->List[List[int]]: #  UC 2
     """[Convert a list to a list[list[]] This is a grid
 
     Args:
         list_1 (List[int]): [A list]
-        columns (int): [how many colums is needed]
+        colum (int): [how many collums is needed]
 
     Returns:
         List[List[int]]: [The resulting grid]
@@ -106,8 +106,7 @@ def getNextPatch(
         "east"  : [x + 1, y],
     }
 
-    # movableCoords = [[-1,4],[0,3],[0,5]] # husk alle sider
-    # ved len 5: [out of index on x], [ok], [out of index on y]
+    # Making the return varaible 
     validMovement = []
 
     if parameters.is_toroid:
@@ -125,11 +124,13 @@ def getNextPatch(
     else:
         # island world
         for key in movableCoords:
-            # [x,y]
+            # [x,y] handles the x-axis and y-axis
             [x,y] = movableCoords[key]
-            # handles x-axis
+            
+            # Handels if the coordinates is valid.
             valid = True
-
+            
+            # handles x-axis
             if x < 0 or x == parameters._west_east_length:
                 valid = False
             # handles y-axis
@@ -139,10 +140,7 @@ def getNextPatch(
             if valid:
                 validMovement.append([x,y])
 
-    if len(validMovement) == 0:
-        return []
-    else:
-        return validMovement
+    return validMovement
 
 def getValidPatches(
     coords: List[List[int]],
@@ -160,7 +158,7 @@ def getValidPatches(
 
     Returns:
         List[List[int]]: [A list with the coordinates of valid patches]
-    """    
+    """   
     validPatches = [] # List contains validated patches to be used for movement of animals
     for [x,y] in coords:
         
@@ -189,7 +187,7 @@ def getValidPatches(
 
     return validPatches
 
-def sleep(world_dir: dir,res: results.SimulationStats)-> Tuple[dir,results.SimulationStats]: ## UC 5
+def sleep(world_dir: dir,res: results.SimulationStats)-> Tuple[dir,results.SimulationStats]: # UC 5
     """[This function ensures that the simulation module will handle each step.
     Each step(tick) is done through yhe dictionary world_dir, this is done by accessing
     animals and the one-dimensional world.
@@ -201,25 +199,25 @@ def sleep(world_dir: dir,res: results.SimulationStats)-> Tuple[dir,results.Simul
 
     Returns:
         Tuple[dir,results.SimulationStats]: [Returns an updated world dictionary and an updated simulation statistics.]
-    """    
+    """      
     world_dir["animals"]    =[]
     for patch in world_dir.get("world_1d"):
         patch.tick()
         for animal in patch.animals():
             # used inheritance to reuse function for both species
             animal.tick()
-            # The dead is collected in our world dictionary, world_dir
+            # The dead is collected in our woorld dictuanosjfbapuybdsf 
             if not animal.is_alive():
-                if type(animal) is entities.Rabbit and animal.energy() == 0:
+                if type(animal) is entities.Rabbit and animal.energy()==0:
                     res.rabbits.age_at_death.append(animal.age())
-                    res.rabbits.dead_by_starvation += 1
+                    res.rabbits.dead_by_starvation+= 1
                 elif type(animal) is entities.Rabbit:
                     res.rabbits.age_at_death.append(animal.age())
                     res.rabbits.dead_by_old_age += 1
-                elif animal.energy() == 0:
+                elif animal.energy()==0:
                     res.foxes.age_at_death.append(animal.age())
-                    res.foxes.dead_by_starvation += 1
-                else:
+                    res.foxes.dead_by_starvation+= 1
+                else: 
                     res.foxes.age_at_death.append(animal.age())
                     res.foxes.dead_by_old_age += 1
             else:
@@ -227,7 +225,7 @@ def sleep(world_dir: dir,res: results.SimulationStats)-> Tuple[dir,results.Simul
                 
     return world_dir,res
 
-def feed(world_dir: dir,res: results.SimulationStats)->Tuple[dir,results.SimulationStats]: ## UC 6
+def feed(world_dir: dir,res: results.SimulationStats)->Tuple[dir,results.SimulationStats]: # UC 6 
     """[The Feeding step for updating during simulation execution. It get the animals to feed and count the ones that dies]
 
     Args:
@@ -236,12 +234,11 @@ def feed(world_dir: dir,res: results.SimulationStats)->Tuple[dir,results.Simulat
 
     Returns:
         Tuple[dir,results.SimulationStats]: [Returns the updated dictionary and statestics.]
-    """    
-    living_animals=[] # a list of living animals is used to update world dictionary.
-    for animal in world_dir["animals"]:
+    """ 
+    living_animals=[] # A list of living animals is used to update world dictionary.
 
+    for animal in world_dir["animals"]:
     # Rabbit, automatically eats grass
-    # Fox, check for rabbits - if rabbit is on the same patch it gets eaten and killed by the fox.
         if type(animal) is entities.Fox : 
             animal.feed()
         if type(animal) is entities.Fox and animal.is_alive():
@@ -249,10 +246,11 @@ def feed(world_dir: dir,res: results.SimulationStats)->Tuple[dir,results.Simulat
         elif type(animal) is entities.Fox:
             res.foxes.age_at_death.append(animal.age())
             res.foxes.dead_by_starvation += 1
-                    
+            
+
+        
     for animal in world_dir["animals"]:
-    # Rabbit, automatically eats grass
-    # Fox, check for rabbits - if rabbit is on the same patch it gets eaten and killed by the fox.
+    # Fox, check for rabbits, if rabbit on same patch it gets eaten and killed.
         if type(animal) is entities.Rabbit and not animal.is_alive():
             res.rabbits.age_at_death.append(animal.age())
             res.rabbits.dead_by_predation += 1
@@ -267,12 +265,14 @@ def feed(world_dir: dir,res: results.SimulationStats)->Tuple[dir,results.Simulat
                 res.rabbits.dead_by_starvation += 1
             else:
                 living_animals.append(animal)
-             
+
+   
+            
     # updating the dictionary
     world_dir["animals"]=living_animals 
     return world_dir,res
 
-def Breeding(world_dir: dir, parameter: parameters.Simulation ,res)->Tuple[list[entities.Animal],results.SimulationStats]: ## UC 7
+def Breeding(world_dir: dir, parameter: parameters.Simulation ,res)->Tuple[list[entities.Animal],results.SimulationStats]: # UC 7
     """[The breeding step of the update. If the conditions for breeding are met for each animal a new animal is applied into the world.]
 
     Args:
@@ -281,24 +281,35 @@ def Breeding(world_dir: dir, parameter: parameters.Simulation ,res)->Tuple[list[
         res ([results.SimulationStats]): [Place were statestik is saved]
 
     Returns:
-        Tuple[list[entities.Animal],results.SimulationStats]: [Returns the animal witch can move and the updated statictik]
+        Tuple[list[entities.Animal],results.SimulationStats,dir]: [Returns the animal witch can move, the updated statictik, and updated the dictionary]
     """    
-    
-    animale_to_move = []
-    grid = world_dir.get("world")
+    # a list with the animals that is allowd to move. 
+    animale_to_move=[]
+
+    # new animal to add
+    New_animal=[]
+
+    # The world in 2D to so we can use the x and y coordinats to get the right patch
+    grid=world_dir.get("world")
+
     for animal in  world_dir["animals"]:
         if animal.can_reproduce():
             # get available patch
             validMovement = getNextPatch(animal,parameter)
             valid_coord = getValidPatches(validMovement, animal, grid, True)
             
+            # if valid_coord is not empty 
             if(valid_coord):
-                [x,y] = random.sample(valid_coord,1)[0]
+                [x,y]=random.sample(valid_coord,1)[0]
                 newborn = animal.reproduce(grid[x][y])
-                if(newborn == None):
+
+                # If the reproduce fails the animal has to move.
+                if(newborn==None):
                     animale_to_move.append(animal)
                 else:
-                    if type(animal) is entities.Rabbit:
+                    # the newborn is registered in the total population and in living animals
+                    New_animal.append(newborn)
+                    if type(newborn) is entities.Rabbit:
                         res.rabbits.total +=1
                     else:
                         res.foxes.total +=1
@@ -307,29 +318,34 @@ def Breeding(world_dir: dir, parameter: parameters.Simulation ,res)->Tuple[list[
                 animale_to_move.append(animal)
         else: 
             animale_to_move.append(animal)
-    return animale_to_move, res
+
+    world_dir["animals"]=world_dir["animals"]+(New_animal)
+
+    return animale_to_move, res, world_dir
 
 def Move_animals(
     animale_to_move: list[entities.Animal],
     grid: List[List[entities.Patch]],
     parameters: parameters.Simulation
-    ): ## UC 8
+    ): # UC 8
     """[Last step of the update. Moving the movable animals on the world grid]
     Args:
         animale_to_move (list[entities.Animal]): [The animals that is allowed to move]
         grid (List[List[entities.Patch]]): [Grid of the world]
         parameters (parameters.Simulation): [Simulation parameters for the current simulation]
-    """    
+    """
+    # the animal that has to move is looped over
     for animal in animale_to_move:
         validMovement = getNextPatch(animal,parameters)
         valid_coord = getValidPatches(validMovement, animal, grid, False)
 
+        # if a valid coordinat is found the animal moves
         if valid_coord:
-            [x,y] = random.sample(valid_coord,1)[0]
+            [x,y]=random.sample(valid_coord,1)[0]
             animal.move_to(grid[x][y])
 
 def rabbitsYouKnow():
-    """ Solely for entertainment purposes
+    """Solely for entertainment purposes
     """    
     for times in range(7):
         print(
@@ -366,8 +382,7 @@ def alive_animals(world: dir,res: results.SimulationStats)->results.SimulationSt
 
     Returns:
         results.SimulationStats: [Returns the updated statistics]
-    """
-
+    """ 
     # Counts the total energy across current living rabbits
     energy_rab = 0
 
@@ -379,13 +394,15 @@ def alive_animals(world: dir,res: results.SimulationStats)->results.SimulationSt
 
     # Counts the total number of foxes in current living population
     energy_fox_num = 0
+
     for animal in world.get("animals"):
         if type(animal) is entities.Rabbit:
             energy_rab += animal.energy()
-            energy_rab_num += 1
+            energy_rab_num +=1
         else:
             energy_fox += animal.energy()
-            energy_fox_num += 1
+            energy_fox_num +=1
+
 
     # Collects data for animals dependent on type and their size per simulation step.
     res.rabbits.size_per_step.append(energy_rab_num)
@@ -406,113 +423,34 @@ def alive_animals(world: dir,res: results.SimulationStats)->results.SimulationSt
     # Calculates the total average across both types of animals and the total population
     if res.rabbits.avg_energy_per_step[-1] == 0 and res.foxes.avg_energy_per_step[-1] == 0:
         res.avg_energy_per_step.append(0)
-    
     elif res.rabbits.avg_energy_per_step[-1] == 0:
         res.avg_energy_per_step.append(res.foxes.avg_energy_per_step[-1])
     elif res.foxes.avg_energy_per_step[-1] == 0:
         res.avg_energy_per_step.append(res.rabbits.avg_energy_per_step[-1])
-
-    
     else:
         res.avg_energy_per_step.append(round((res.rabbits.avg_energy_per_step[-1] + res.foxes.avg_energy_per_step[-1]) / 2,2))
 
     return res
 
-def printResultCheck(res): ## UC 10
-    print("A record of the age of death of each individual.")
-    print(res.foxes.age_at_death)     #
-    print(res.rabbits.age_at_death)
-    
-          
-    print("\n")
-    print("A record of the average energy level across the population, in chronological order.")
-    print(res.foxes.avg_energy_per_step)       #
-    print(res.rabbits.avg_energy_per_step)#
-    print(res.avg_energy_per_step)
-          
-    print("\n")
-    print("Number of individuals that died by old age.")
-    print(res.foxes.dead_by_old_age)     #
-    print(res.rabbits.dead_by_old_age)       #
-    
-          
-    print("\n")
-    print("Number of individuals that died by predation.")
-    print(res.rabbits.dead_by_predation)#
-    
-          
-    print("\n")
-    print(" Number of individuals that died by starvation.")
-    print(res.foxes.dead_by_starvation)       #
-    print(res.rabbits.dead_by_starvation)       #
-    
-    print("\n")
-    print("A record of the size of the (alive) population, in chronological order.")
-    print(res.foxes.size_per_step)
-    print(res.rabbits.size_per_step)
-    
-    print("\n")
-    print("Individuals alive and ever lived")
-    print(res.foxes.total)       #
-    print(res.rabbits.total)       #
-    
-    
-    print("\n")
-    print("A grid containing the total of deaths by predation per every patch in the simulation.")
-    print(res.kills_per_patch)
-
-    print("\n")
-    print("Alle de døde")
-    print(res.foxes.dead_by_old_age+res.foxes.dead_by_starvation)
-    print(res.rabbits.dead_by_old_age+res.rabbits.dead_by_starvation+res.rabbits.dead_by_predation)
-    print("total population alive and dead")
-    print(res.foxes.total+res.rabbits.total)       #
- 
-    print("samlet døde")
-    input=res.rabbits.dead_by_old_age+res.rabbits.dead_by_starvation+res.rabbits.dead_by_predation+res.foxes.dead_by_old_age+res.foxes.dead_by_starvation
-    print(input)
-    print("different")
-    print(res.foxes.total+res.rabbits.total-input) 
-    print(res.foxes.size_per_step[-1]+res.rabbits.size_per_step[-1])
-    print(res.foxes.size_per_step[-1])
-    print(res.rabbits.size_per_step[-1])
-
-def run(parameters: parameters.Simulation):
+def run(parameters: parameters.Simulation)->results.SimulationStats:
     """[Primary function that combine all the updates and data collection in one.]
 
     Args:
         parameters (parameters.Simulation): [The parameters of the world]
     """
     # checks that preconditions on parameters are met
-    print(" Checking parameters...", end="")
-    assert 0 < parameters.world.north_south_length
-    assert 0 < parameters.world.west_east_length
-    assert 0 <= parameters.rabbits.initial_size <= parameters.world.area()
-    assert 0 <= parameters.foxes.initial_size <= parameters.world.area()
-    assert 0 <= parameters.rabbits.reproduction_probability <= 1
-    assert 0 <= parameters.foxes.reproduction_probability <= 1
-    assert 0 <= parameters.rabbits.metabolism
-    assert 0 <= parameters.foxes.metabolism
-    print("everything is ok.")
+    paramenter_check(parameters)
+
+    # Making the output class and initialize it
+    res=result_init(parameters)
 
     # Build World and Popoulate World
     world = buildWorld(parameters)
 
-    res = results.SimulationStats()
-
     # Data collection for living animals
     alive_animals(world,res)
 
-    # Used for data collection
-    res.rabbits.total = parameters.rabbits.initial_size 
-    res.foxes.total = parameters.foxes.initial_size 
-
-    # Creates a list for kills according to world area
-    kill_list = [0]*parameters.world.west_east_length * parameters.world.north_south_length
     
-    # Creates two-dimensional grid that administrates kills per patch during simulation
-    kill_grid = list_to_grid(kill_list,parameters.world.north_south_length)
-    res.kills_per_patch = kill_grid
 
     # Handles whether or not the simulation is vizualised or not from parameters
     if parameters.execution.batch:  
@@ -543,7 +481,7 @@ def run(parameters: parameters.Simulation):
         [world,res]                  = sleep(world,res)
         [world,res]                  = feed(world,res)
 
-        [Moveable_animals,res]  = Breeding(world,parameters.world,res)
+        [Moveable_animals,res,world]  = Breeding(world,parameters.world,res)
 
         # Moves animals when the simulation is executed.
         Move_animals(Moveable_animals, world.get("world"), parameters.world)
@@ -560,14 +498,111 @@ def run(parameters: parameters.Simulation):
     # Records the total amount of steps for the current simulation.
     res.steps = tick
 
-    print("simulation Complete")
-    a = 0
-    if a == 1:
-        printResultCheck(res)
+    return res
 
 
-## FIKSES d. 13.12
-sim = parameters.Simulation()
-sim.execution.max_steps=100
+def result_init(parameters: parameters.Simulation)->results.SimulationStats:
+    
+    
+    # The Result class is created for data storage
+    res = results.SimulationStats()
+
+    # Used for data collection
+    res.rabbits.total = parameters.rabbits.initial_size 
+    res.foxes.total = parameters.foxes.initial_size 
+
+    # Creates a list for kills according to world area
+    kill_list = [0]*parameters.world.west_east_length * parameters.world.north_south_length
+    
+    # Creates two-dimensional grid that administrates kills per patch during simulation
+    kill_grid = list_to_grid(kill_list,parameters.world.north_south_length)
+    res.kills_per_patch = kill_grid
+
+    return res
+
+def paramenter_check(parameters: parameters.Simulation):
+
+    print(" Checking parameters...", end="")
+    assert 0 < parameters.world.north_south_length
+    assert 0 < parameters.world.west_east_length
+    assert 0 <= parameters.rabbits.initial_size <= parameters.world.area()
+    assert 0 <= parameters.foxes.initial_size <= parameters.world.area()
+    assert 0 <= parameters.rabbits.reproduction_probability <= 1
+    assert 0 <= parameters.foxes.reproduction_probability <= 1
+    assert 0 <= parameters.rabbits.metabolism
+    assert 0 <= parameters.foxes.metabolism
+    print("everything is ok.")
+
+def print_Result_Check(res):
+          
+    print("\n")
+    print("Number of individuals that died by old age.")
+    print("Foxes")
+    print(res.foxes.dead_by_old_age) 
+    print("Rabbits")    
+    print(res.rabbits.dead_by_old_age)       #
+    
+    print("\n")
+    print("Number of individuals that died by predation.")
+    print(res.rabbits.dead_by_predation)#
+    
+    print("\n")
+    print("Number of individuals that died by starvation.")
+    print("Foxes")
+    print(res.foxes.dead_by_starvation)       #
+    print("Rabbits")
+    print(res.rabbits.dead_by_starvation)       #
+    
+    print("\n")
+    print("Individuals alive and ever lived")
+    print("Foxes")
+    print(res.foxes.total)       #
+    print("Rabbits")
+    print(res.rabbits.total)       #
+
+    print("\n")
+    print("All the dead")
+    placeholder=res.rabbits.dead_by_old_age+res.rabbits.dead_by_starvation+res.rabbits.dead_by_predation+res.foxes.dead_by_old_age+res.foxes.dead_by_starvation
+    print(placeholder)
+    print("Foxes")
+    print(res.foxes.dead_by_old_age+res.foxes.dead_by_starvation)
+    print("Rabbits")
+    print(res.rabbits.dead_by_old_age+res.rabbits.dead_by_starvation+res.rabbits.dead_by_predation)
+    print("total population alive and dead")
+    print(res.foxes.total+res.rabbits.total)       #
+    
+    print("The Different between all the dead and Total alive and dead (The total alice animals)")
+    print(res.foxes.total+res.rabbits.total-placeholder)   
+    print("The number of animal alive when looking at the last step in result")
+    print(res.foxes.size_per_step[-1]+res.rabbits.size_per_step[-1])
+    print("Foxes")
+    print(res.foxes.size_per_step[-1])
+    print("Rabbits")
+    print(res.rabbits.size_per_step[-1])
+    grid_and_list= input("do you want to see the grids and lists? press \"y\" if yes: ")
+    if grid_and_list=="y":
+        print("A record of the age of death of each individual.")
+        print(res.foxes.age_at_death)     #
+        print(res.rabbits.age_at_death)
+        
+        print("\n")
+        print("A record of the size of the (alive) population, in chronological order.")
+        print(res.foxes.size_per_step)
+        print(res.rabbits.size_per_step)
+
+        print("\n")
+        print("A record of the average energy level across the population, in chronological order.")
+        print(res.foxes.avg_energy_per_step)       #
+        print(res.rabbits.avg_energy_per_step)#
+        print(res.avg_energy_per_step)
+
+        print("\n")
+        print("A grid containing the total of deaths by predation per every patch in the simulation.")
+        print(res.kills_per_patch)
+
+sim=parameters.Simulation()
+sim.execution.max_steps=10
 sim.execution.batch=False
-run(sim)
+res = run(sim)
+print_Result_Check(res)
+
