@@ -1,11 +1,4 @@
 
-# import os 
-# Path_to_files=os.path.realpath(__file__)
-
-# Path_to_files=Path_to_files.replace("\\"+os.path.basename(__file__),"")
-
-# os.setchdir=Path_to_files
-
 import simulation
 import reporting
 from parameters import Execution, Simulation, World, Population
@@ -315,6 +308,3 @@ def reporting_menu(results):
             reporting.plot_kills(results)
         elif int(user_input) == 6:
             sys.exit()
-
-
-main_menu()
