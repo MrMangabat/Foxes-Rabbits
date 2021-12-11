@@ -69,7 +69,7 @@ def buildWorld(parameters: parameters.Simulation)->dir: # UC 1
         "animals"   : rabbits + foxes,
     }
 
-def list_to_grid(list_1: List[int],colum: int)->List[List[int]]: #  UC 2
+def list_to_grid(list_1: List,colum: int)->List[List[int]]: #  UC 2
     """[Convert a list to a list[list[]] This is a grid
 
     Args:
@@ -272,7 +272,7 @@ def feed(world_dir: dir,res: results.SimulationStats)->Tuple[dir,results.Simulat
     world_dir["animals"]=living_animals 
     return world_dir,res
 
-def Breeding(world_dir: dir, parameter: parameters.Simulation ,res)->Tuple[list[entities.Animal],results.SimulationStats]: # UC 7
+def Breeding(world_dir: dir, parameter: parameters.Simulation ,res)->Tuple[List[entities.Animal],results.SimulationStats]: # UC 7
     """[The breeding step of the update. If the conditions for breeding are met for each animal a new animal is applied into the world.]
 
     Args:
@@ -324,7 +324,7 @@ def Breeding(world_dir: dir, parameter: parameters.Simulation ,res)->Tuple[list[
     return animale_to_move, res, world_dir
 
 def Move_animals(
-    animale_to_move: list[entities.Animal],
+    animale_to_move: List[entities.Animal],
     grid: List[List[entities.Patch]],
     parameters: parameters.Simulation
     ): # UC 8
@@ -469,14 +469,14 @@ def run(parameters: parameters.Simulation)->results.SimulationStats:
         cgs = int
    
     # Per tick
-    tick = 0
+    Step = 0
 
     # Rabbits be rabbits!
     rabbitsYouKnow()
     
-    while len(world.get("animals"))!= 0 and tick < parameters.execution.max_steps:
+    while len(world.get("animals"))!= 0 and Step < parameters.execution.max_steps:
         # Counter for each step in the simulation.
-        tick += 1
+        Step += 1
         
         [world,res]                  = sleep(world,res)
         [world,res]                  = feed(world,res)
@@ -490,50 +490,17 @@ def run(parameters: parameters.Simulation)->results.SimulationStats:
         res = alive_animals(world,res)
 
         # Updates GUI according to steps.
-        cgu(tick)
+        cgu(Step)
 
    
     cgs()
 
     # Records the total amount of steps for the current simulation.
-    res.steps = tick
+    res.steps = Step
 
     return res
 
-
-def result_init(parameters: parameters.Simulation)->results.SimulationStats:
-    
-    
-    # The Result class is created for data storage
-    res = results.SimulationStats()
-
-    # Used for data collection
-    res.rabbits.total = parameters.rabbits.initial_size 
-    res.foxes.total = parameters.foxes.initial_size 
-
-    # Creates a list for kills according to world area
-    kill_list = [0]*parameters.world.west_east_length * parameters.world.north_south_length
-    
-    # Creates two-dimensional grid that administrates kills per patch during simulation
-    kill_grid = list_to_grid(kill_list,parameters.world.north_south_length)
-    res.kills_per_patch = kill_grid
-
-    return res
-
-def paramenter_check(parameters: parameters.Simulation):
-
-    print(" Checking parameters...", end="")
-    assert 0 < parameters.world.north_south_length
-    assert 0 < parameters.world.west_east_length
-    assert 0 <= parameters.rabbits.initial_size <= parameters.world.area()
-    assert 0 <= parameters.foxes.initial_size <= parameters.world.area()
-    assert 0 <= parameters.rabbits.reproduction_probability <= 1
-    assert 0 <= parameters.foxes.reproduction_probability <= 1
-    assert 0 <= parameters.rabbits.metabolism
-    assert 0 <= parameters.foxes.metabolism
-    print("everything is ok.")
-
-def print_Result_Check(res):
+def Print_Result_Check(res): # UC 12
           
     print("\n")
     print("Number of individuals that died by old age.")
@@ -562,17 +529,22 @@ def print_Result_Check(res):
 
     print("\n")
     print("All the dead")
-    placeholder=res.rabbits.dead_by_old_age+res.rabbits.dead_by_starvation+res.rabbits.dead_by_predation+res.foxes.dead_by_old_age+res.foxes.dead_by_starvation
-    print(placeholder)
+    All_dead=res.rabbits.dead_by_old_age+res.rabbits.dead_by_starvation+res.rabbits.dead_by_predation+res.foxes.dead_by_old_age+res.foxes.dead_by_starvation
+    print(str(All_dead)+" From each specific dead collected")
+    print(str(len(res.foxes.age_at_death)+len(res.rabbits.age_at_death)) + " From the length of the lists age_at_death")
     print("Foxes")
     print(res.foxes.dead_by_old_age+res.foxes.dead_by_starvation)
+    print(str(len(res.foxes.age_at_death)) + " From the length of the lists age_at_death")
     print("Rabbits")
     print(res.rabbits.dead_by_old_age+res.rabbits.dead_by_starvation+res.rabbits.dead_by_predation)
+    print(str(len(res.rabbits.age_at_death)) + " From the length of the lists age_at_death")
     print("total population alive and dead")
-    print(res.foxes.total+res.rabbits.total)       #
+    print(str(res.foxes.total+res.rabbits.total) + " From total")
+    print(str(All_dead+res.foxes.size_per_step[-1]+res.rabbits.size_per_step[-1])+" From each specific dead collected, and alive from step")
+    print(str(len(res.foxes.age_at_death)+len(res.rabbits.age_at_death)+res.foxes.size_per_step[-1]+res.rabbits.size_per_step[-1]) + " From the length of the lists age_at_death, and alive from step")          #
     
     print("The Different between all the dead and Total alive and dead (The total alice animals)")
-    print(res.foxes.total+res.rabbits.total-placeholder)   
+    print(res.foxes.total+res.rabbits.total-All_dead)   
     print("The number of animal alive when looking at the last step in result")
     print(res.foxes.size_per_step[-1]+res.rabbits.size_per_step[-1])
     print("Foxes")
@@ -600,9 +572,42 @@ def print_Result_Check(res):
         print("A grid containing the total of deaths by predation per every patch in the simulation.")
         print(res.kills_per_patch)
 
-sim=parameters.Simulation()
-sim.execution.max_steps=10
-sim.execution.batch=False
-res = run(sim)
-print_Result_Check(res)
+def paramenter_check(parameters: parameters.Simulation): # UC 13
 
+    print(" Checking parameters...", end="")
+    assert 0 < parameters.world.north_south_length
+    assert 0 < parameters.world.west_east_length
+    assert 0 <= parameters.rabbits.initial_size <= parameters.world.area()
+    assert 0 <= parameters.foxes.initial_size <= parameters.world.area()
+    assert 0 <= parameters.rabbits.reproduction_probability <= 1
+    assert 0 <= parameters.foxes.reproduction_probability <= 1
+    assert 0 <= parameters.rabbits.metabolism
+    assert 0 <= parameters.foxes.metabolism
+    print("everything is ok.")
+
+def result_init(parameters: parameters.Simulation)->results.SimulationStats: # UC 14 
+    """[A function that extract the starting information from a class [parameters.Simulation] and initializes the class where important data is saved.]
+
+    Args:
+        parameters (parameters.Simulation): [The parameters of the world]
+
+    Returns:
+        results.SimulationStats: [Returns the initialize result class]
+    """ 
+    
+    # The Result class is created for data storage
+    res = results.SimulationStats()
+
+    # Used for data collection
+    res.rabbits.total = parameters.rabbits.initial_size 
+    res.foxes.total = parameters.foxes.initial_size 
+
+    # Creates a list for kills according to world area
+    kill_list = [0]*parameters.world.west_east_length * parameters.world.north_south_length
+    
+    # Creates two-dimensional grid that administrates kills per patch during simulation
+    kill_grid = list_to_grid(kill_list,parameters.world.north_south_length)
+    res.kills_per_patch = kill_grid
+
+    return res
+    
