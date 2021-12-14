@@ -1,0 +1,177 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Dec 14 14:41:38 2021
+
+@author: Bruger
+"""
+
+# import os 
+# Path_to_files=os.path.realpath(__file__)
+
+# Path_to_files=Path_to_files.replace("\\"+os.path.basename(__file__),"")
+
+# os.setchdir=Path_to_files
+
+import matplotlib.pyplot as plt
+import simulation
+import parameters
+import entities
+import results
+import numpy as np
+
+sim=parameters.Simulation()
+sim.execution.step_delay=0.01
+sim.execution.max_steps=100
+sim.execution.batch=False
+res=simulation.run(sim)
+#%%
+
+def plot_pop_size(res: results.SimulationStats):
+    fig, (ax0) = plt.subplots(1, 1, sharex=True, constrained_layout=True)
+    steps=list(range(len(res.foxes.size_per_step)))
+    all_pop=[a + b for a, b in zip(res.foxes.size_per_step, res.rabbits.size_per_step)]
+    
+    ax0.plot(steps,res.foxes.size_per_step, label='Fox population')
+    ax0.plot(steps,res.rabbits.size_per_step, label='Rabbit population')
+    ax0.plot(steps,all_pop, label='Fox and rabbit population')
+    
+    
+    ax0.legend(loc='upper right')
+    ax0.set_ylabel('Populations')  # $[^oC]$' note the use of TeX math formatting
+
+# lav også et hisstogram hvor foxes er en farve og rabbit er en anden. Så sjølerne er 2 farvet
+    
+    # def plot_pop_size_bar(res: results.SimulationStats):
+    labels =  [str(i) for i in list(range(len(res.foxes.size_per_step)))] 
+    Foxes = res.foxes.size_per_step
+    Rabbits = res.rabbits.size_per_step
+    width = 1       # the width of the bars: can also be len(x) sequence
+    
+    fig, ax = plt.subplots()
+    
+    ax.bar(labels,Foxes, width, label='Foxes')
+    ax.bar(labels,Rabbits, width, bottom=Foxes,
+           label='Rabbits')
+    ax.locator_params(tight=True, nbins=4)
+    ax.set_ylabel('Population')
+    ax.set_title('Population by animale race')
+    ax.legend()
+    
+    ax.xaxis.set_major_locator(plt.MaxNLocator(11))
+    
+    # plt.locator_params(axis='x', nbins=10)
+    # hej=len(Foxes)/10
+    # custom_ticks=[]
+    # [custom_ticks.append(round(hej*a,0)) for a in range(0,11)]
+    # ax.set_xticks(custom_ticks)
+    # ax.set_xticklabels(custom_ticks) # skal kontroleres om det for upræcist
+
+def plot_kills(res: results.SimulationStats):
+    fig, ax = plt.subplots()
+
+    image = res.kills_per_patch
+    top = max([max(i) for i in image]) 
+    
+    ax.imshow(image, cmap=plt.cm.Reds)
+    psm = ax.pcolormesh(image, cmap=plt.cm.Reds, rasterized=True, vmin=0, vmax=top)
+    fig.colorbar(psm, ax=ax)
+    
+    
+    ax.set_title('kill grid')
+    
+    # Move left and bottom spines outward by 10 points
+    ax.spines.left.set_position(('outward', 10))
+    ax.spines.bottom.set_position(('outward', 10))
+    # Hide the right and top spines
+    ax.spines.right.set_visible(False)
+    ax.spines.top.set_visible(False)
+    # Only show ticks on the left and bottom spines
+    ax.yaxis.set_ticks_position('left')
+    ax.xaxis.set_ticks_position('bottom')
+
+
+
+def plot_lifespan(res: results.SimulationStats):
+    
+    fig, (ax0)  = plt.subplots(1, 1, sharex=True, constrained_layout=True)
+    steps       = list(range(len(res.foxes.avg_energy_per_step)))
+    Foxes       = res.foxes.avg_energy_per_step
+    Rabbits     = res.rabbits.avg_energy_per_step
+    Both        = res.avg_energy_per_step
+    
+    ax0.plot(steps,Foxes, label='Fox: Average energy')
+    ax0.plot(steps,Rabbits, label='Rabbit: Average energy')
+    ax0.plot(steps,Both, label='Fox and rabbit: average energy')
+    
+    
+    ax0.legend(loc='upper right')
+    ax0.set_ylabel('average energy')  # $[^oC]$' note the use of TeX math formatting
+
+# lav også et hisstogram hvor foxes er en farve og rabbit er en anden. Så sjølerne er 2 farvet
+    # def plot_pop_size_bar(res: results.SimulationStats):
+    
+    x = np.arange(len(steps))  # the label locations
+    width = 1  # the width of the bars
+    
+    fig, (ax0,ax1,ax2) = plt.subplots(1,3)
+    ax0.bar(x, Foxes, width, label='Foxes')
+    ax1.bar(x, Rabbits, width, label='Rabbits')
+    ax2.bar(x, Both, width, label='Both')
+    
+    for i, a in zip([ax0,ax1,ax2],["Rabbits", "Foxes", "Both"]):
+    # Add some text for labels, title and custom x-axis tick labels, etc.
+        i.set_ylabel('avage energy')
+        i.set_title(a)
+        i.set_ylim([0, 140])
+
+        i.xaxis.set_major_locator(plt.MaxNLocator(5))
+
+        
+    fig.tight_layout()
+
+                
+
+
+def plot_energy(res: results.SimulationStats):
+    print("hej")
+
+#%% evt anden måde at gøre det på 
+
+# def bar_plot(x1: results.SimulationStats.Animal,x2: results.SimulationStats.Animal,xstring: str,ystring: str,title: str):
+#     # def plot_pop_size_bar(res: results.SimulationStats):
+#     labels =  [str(i) for i in list(range(len(x1)))] 
+#     width = 1       # the width of the bars: can also be len(x) sequence
+    
+#     fig, ax = plt.subplots()
+    
+#     ax.bar(labels,x1, width, label='Foxes')
+#     ax.bar(labels,x2, width, bottom=x1,
+#            label='Rabbits')
+#     ax.set_xlabel(xstring)
+#     ax.set_ylabel(ystring)
+#     ax.set_title(title)
+#     ax.legend()
+    
+#     ax.xaxis.set_major_locator(plt.MaxNLocator(11))
+
+# ystring = 'Average energy'
+# xstring = "step in the simulation"
+# title   = 'Average energy by animale race'
+# x1      = res.foxes.avg_energy_per_step
+# x2      = res.rabbits.avg_energy_per_step
+# bar_plot(x1,x2,xstring,xstring,title)
+
+#%%
+
+plot_pop_size(res)
+
+
+#%%
+plot_kills(res)
+
+#%%
+
+plot_lifespan(res)
+
+
+plt.show()
