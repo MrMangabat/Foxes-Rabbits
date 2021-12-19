@@ -117,10 +117,20 @@ class Animal:
         return self._age
 
     def can_eproduce(self) -> bool:
-        
+        """[Checks if an animal is alive and validates reproduction criterias according to parameters for minimum energy and age with a True/False.]
+
+        Returns:
+            bool: [True if an animal can reproduce else False.]
+        """        
         return self.is_alive() and self._energy >= self._parameters.reproduction_min_energy and self._parameters.reproduction_min_age
 
+
+    def reproduce(self, patch: Patch):
+        
+        return None
+
     def energy(self) -> int:
+
         return self._energy
 
     def feed(self):
@@ -138,24 +148,35 @@ class Animal:
         return self._patch
 
     def predatator_in(self, patch:Patch) -> bool:
-           
+        
         pass
 
-    def reproduce(self, newborn_patch: Patch):
-        pass
+    
 
     def same_species_in(self, patch:Patch) -> bool:
         pass
 
     def tick(self):
-        pass
-    
-   
+        if self.is_alive():
+            self._age += 1
+            self._energy = (self._energy - self._parameters.metabolism)
+        else:
+            self.is_alive and self._energy <= 0 or self._parameters.max_age == True
+            self.remove(Animal) 
+  
 class Rabbit:
 
-    def __init__(Animal):
-        pass
+    reproduction_cost_rate = 0.85
+    feedingMetabolismRate = 2.5
 
+    def __init__(Animal, population: parameters.Population, patch: Patch, age: int):
+        
+        # Initial energy for population rabbits is set to 25 % of maximum value.
+        energy = round(population.max_energy * 0.25)
+
+        ## Super is used to declare that this is a subclass from class Animals.
+        # To ensure that the same goes into the subclass, we initiate the super class contructor to ensure alignment between these two.
+        super().__init__(population, age, energy, patch)
     def food_energy_per_unit(self):
         pass
 
@@ -164,8 +185,17 @@ class Rabbit:
 
 class Fox:
 
-    def __init__(Animal):
-        pass
+
+    reproduction_cost_rate = 0.85
+    food_energy_per_unit = 15
+
+
+    def __init__(Animal, population: parameters.Population, patch: Patch, age: int):
+        # Sets the initial max energy of population rabbits to 70 % of maximum value.
+        energy = round(population.max_energy * 0.70)
+        ## Super is used to declare that this is a subclass from class Animals.
+        # To ensure that the same goes into the subclass, we initiate the super class contructor to ensure alignment between these two.
+        super().__init__(population, age, energy, patch)
 
     def feeding_metabolism_rate(self):
         pass
