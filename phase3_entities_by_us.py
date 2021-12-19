@@ -1,24 +1,24 @@
 from typing import Optional, Tuple
 import parameters
 import random
+
+
 ## Create entitites module
 class Patch:
     
 
-    # Class attributes for regarding grass
-    min_grass_growth = 1
-    max_grass_growth = 4
-    max_grass_amount = 30
+    # Class attributes for grass
+    minGrassGrowth = 1
+    maxGrassGrowthh = 4
+    maxGrassAmout = 30
 
-
-    def __init__(x: int, y:int):
+    def __init__(self, x: int, y:int):
         self._coordinates = (x,y)
         self._foxes = []
         self._rabbits = []
         # Inserts some random amount of grass ----> Ikke sikker på om det er 100 % korrekt, men tænker det.
-        self._grass = random.randrange(Patch.max_grass_amount)
+        self._grass = random.randrange(Patch.maxGrassAmout)
 
-# Getters for class Patch.
     def coordinates(self) -> Tuple[int, int]:
         """[Return coordinates of the current patch]
 
@@ -35,40 +35,90 @@ class Patch:
         """       
         return self._grass
 
-## Setters for class Patch.
     def tick(self):
-        pass
+        
+        if self._grass < Patch.maxGrassAmout:
+            grassGrowth = self._grass + random.randrange(Patch.minGrassGrowth, Patch.maxGrassGrowthh)
+            self._grass = min(grassGrowth, Patch.maxGrassAmout)
 
     def has_alive_fox(self) -> bool:
-        pass
+        """[Checks the list of foxes, to see whether or not it is alive through is_alive function call]
+
+        Returns:
+            bool: [If fox is alive, return True, else False.]
+        """        
+        for aliveFox in self._foxes:
+            if aliveFox.is_alive():
+                return aliveFox
 
     def has_alive_rabbit(self) -> bool:
-        pass
-    def add(self, animal:Animal):
-        pass
+        """[Checks the list of rabbits, to see whether or not it is alive through is_alive function call.]
 
-    def remove(self, animal:Animal):
-        pass
+        Returns:
+            [bool]: [If rabbit is alive, return True, else False.]
+        """        
+        for aliveRabbit in self._rabbits:
+            if aliveRabbit.is_alive():
+                return aliveRabbit
 
-    # def animals(self):
-    #     pass
+    def animalPopulation(self, animal):
+        """[Adds an animal type to the one of the followings lists in class:Patch constructor - _foxes or _rabbtis.
+        This is also used to verify whether or not an animal is alive]
 
+        Args:
+            animal ([Integer]): [Can be either a fox or rabbit.]
+
+        Returns:
+            [List]: [description]
+        """        
+        if type(animal) is Fox:
+            self.animalPopulation(animal).append(animal)
+            return self._foxes
+        else:
+            type(animal) is Rabbit
+            self.animalPopulation(animal).append(animal)
+            return self._rabbits
+
+    def animals(self):
+        """[Validates to see if which kind of animals is on the a patch.]
+
+        Returns:
+            [Integer]: [An updated list for both foxces and rabbits.]
+        """        
+        return self._foxes + self._rabbits
+
+    def add(self, animal):
+        """[Adds an animal, either fox or rabbit to the total population.]
+
+        Args:
+            animal ([List]): [List of animals.]
+        """        
+        self.animalPopulation(animal).append(animal)
+        
+    def remove(self, animal):
+        """[Removes an animal, can be either fox or rabbit.]
+
+        Args:
+            animal ([Integer]): [List of animals.]
+        """        
+        self.animalPopulation(animal).remove(animal)
 
 class Animal:
 
-    def __init__(self, population: parameters.Population, patch: Patch, energy: int, age: int ):
+    def __init__(self, population: parameters.Population, patch: Patch, energy: int, age: int):
         self._parameters = population
         self._energy = energy
         self._age = age
         self._patch = patch
         self._patch.add(self)
+        
 
-## Getters for class Animal.
     def age(self) -> int:
         return self._age
 
     def can_eproduce(self) -> bool:
-        pass
+        
+        return self.is_alive() and self._energy >= self._parameters.reproduction_min_energy and self._parameters.reproduction_min_age
 
     def energy(self) -> int:
         return self._energy
@@ -88,14 +138,7 @@ class Animal:
         return self._patch
 
     def predatator_in(self, patch:Patch) -> bool:
-        """[]
-
-        Args:
-            patch (Patch): [description]
-
-        Returns:
-            bool: [description]
-        """        
+           
         pass
 
     def reproduce(self, newborn_patch: Patch):
