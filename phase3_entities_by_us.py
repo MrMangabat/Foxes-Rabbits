@@ -6,13 +6,18 @@ import random
 ## Create entitites module
 class Patch:
     
-
     # Class attributes for grass
     minGrassGrowth = 1
     maxGrassGrowthh = 4
     maxGrassAmout = 30
 
     def __init__(self, x: int, y:int):
+        """[This is the constructor for class Patch]
+
+        Args:
+            x (int): [Enables accesss to coordinates from west to east in the grid.]
+            y (int): [Enables accesss to coordinates from north to south in the grid.]
+        """    
         self._coordinates = (x,y)
         self._foxes = []
         self._rabbits = []
@@ -112,8 +117,12 @@ class Animal:
         self._patch = patch
         self._patch.add(self)
         
-
     def age(self) -> int:
+        """[Enables the tracking of age for each individual]
+
+        Returns:
+            int: [The age of each individual in for each species.]
+        """        
         return self._age
 
     def can_eproduce(self) -> bool:
@@ -124,13 +133,23 @@ class Animal:
         """        
         return self.is_alive() and self._energy >= self._parameters.reproduction_min_energy and self._parameters.reproduction_min_age
 
+    def reproduce(self, newbornPatch: Patch) -> Optional["Animal"]:
+        """[Handles the scenario when a newborn is being born into the simulation or none.]
 
-    def reproduce(self, patch: Patch):
-        
+        Args:
+            patch (Patch): [The position of the animal.]
+
+        Returns:
+            [Integer]: [A newborn rabbit or foxes.]
+        """    
         return None
 
     def energy(self) -> int:
+        """[Tracking of an species energy level.]
 
+        Returns:
+            int: [Returns species energy level.]
+        """    
         return self._energy
 
     def feed(self):
@@ -138,53 +157,67 @@ class Animal:
         pass
 
     def is_alive(self) -> bool:
+        """[Function that checks if a an animal is alive, if not not it return False otherwise True.]
 
+        Returns:
+            bool: [True or False depending on whether or not the animal is alive.]
+        """        
         return self._energy > 0 and self._age < self._parameters.max_age
 
-    def move_to(self):
-        pass
+    def move_to(self, patch:Patch):
+        """[Moves an animal from current patch to another. It checks if an animal is alive,
+        if the patch is not the same patch and lastly if the animal is not of the same species.
+        End of this process, it will add itself to the new patch.]
+
+        Args:
+            patch (Patch): [description]
+        """        
+        # Ensures that an animal must be alive for being able to move.
+        assert self.is_alive()
+        # Ensures that another patch is used.
+        assert self.patch() != patch
+        # Ensures that same type of animal is not on the patch.
+        assert self.same_species_in(patch) != True
+        # Ensures that the animal is remove from the patch it is coming from
+        self._patch.remove(self)
+        self._patch = patch
+        # Ensures the animal is added to the new patch it is supposed to move to.
+        self._patch.add(self)
 
     def patch(self) -> Patch:
+        """[Enables the positioning of animals on patches.]
+
+        Returns:
+            Patch: [The position of the animal.]
+        """    
         return self._patch
 
     def predatator_in(self, patch:Patch) -> bool:
+        """[Checks if there is an predator on the patch. This will only be true for rabbits.]
+
+        Args:
+            patch (Patch): [Ensures access to the different patches.]
+
+        Returns:
+            bool: [True if a rabbit and a fox is on the same patch, False otherwise.]
+        """    
+        pass
+ 
+    def same_species_in(self, patch:Patch) -> bool:
         
         pass
 
-    
-
-    def same_species_in(self, patch:Patch) -> bool:
-        pass
-
     def tick(self):
+        """[Accounts for one step in the simulation and ensure aging and energy consumption of animals.]
+        """    
         if self.is_alive():
             self._age += 1
             self._energy = (self._energy - self._parameters.metabolism)
         else:
             self.is_alive and self._energy <= 0 or self._parameters.max_age == True
-            self.remove(Animal) 
+            self.remove(self) 
   
-class Rabbit:
-
-    reproduction_cost_rate = 0.85
-    feedingMetabolismRate = 2.5
-
-    def __init__(Animal, population: parameters.Population, patch: Patch, age: int):
-        
-        # Initial energy for population rabbits is set to 25 % of maximum value.
-        energy = round(population.max_energy * 0.25)
-
-        ## Super is used to declare that this is a subclass from class Animals.
-        # To ensure that the same goes into the subclass, we initiate the super class contructor to ensure alignment between these two.
-        super().__init__(population, age, energy, patch)
-    def food_energy_per_unit(self):
-        pass
-
-    def reproduction_cost_rate(self):
-        pass
-
-class Fox:
-
+class Fox(Animal):
 
     reproduction_cost_rate = 0.85
     food_energy_per_unit = 15
@@ -197,15 +230,69 @@ class Fox:
         # To ensure that the same goes into the subclass, we initiate the super class contructor to ensure alignment between these two.
         super().__init__(population, age, energy, patch)
 
-    def feeding_metabolism_rate(self):
+    def predators_in(self, path:Patch) -> bool:
+        """[Foxes dont have any predators, therefore this always returns False.]
+
+        Args:
+            path (Patch): [description]
+
+        Returns:
+            bool: [description]
+        """        
+        return False
+    
+    def same_species_in(self, patch: Patch) -> bool:
+        
+        return patch.has_alive_fox
+
+    def reproduction_cost_rate(self):
+        pass
+
+
+
+class Rabbit(Animal):
+
+    reproduction_cost_rate = 0.85
+    feedingMetabolismRate = 2.5
+
+    def __init__(self, population: parameters.Population, patch: Patch, age: int):
+        
+        # Initial energy for population rabbits is set to 25 % of maximum value.
+        energy = round(population.max_energy * 0.25)
+
+        ## Super is used to declare that this is a subclass from class Animals.
+        # To ensure that the same goes into the subclass, we initiate the super class contructor to ensure alignment between these two.
+        super().__init__(population, age, energy, patch)
+        self._slayRabbit = False
+    
+    def same_species_in(self, patch:Patch) -> bool:
+        """[Checks of there is another rabbit on the patch.]
+
+        Args:
+            patch (Patch): [Position of an animal.]
+
+        Returns:
+            bool: [True if there is another rabbit else False.]
+        """    
+        return patch.has_alive_rabbit
+    
+    def food_energy_per_unit(self):
         pass
 
     def reproduction_cost_rate(self):
         pass
 
-    def kill(self):
-        pass
+    
+    def slayRabbit(self):
+        """[Kills the rabbit and removes it from the patch.]
+        """        
+        self._slayRabbit = True
+        self._patch.remove(self)
 
     def was_killed(self) -> bool:
-        pass
+        """[Checks if the rabbit had an dramatic ending of their unisex life or not.]
 
+        Returns:
+            bool: [description]
+        """    
+        return self._slayRabbit
