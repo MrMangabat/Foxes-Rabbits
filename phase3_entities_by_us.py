@@ -21,8 +21,8 @@ class Patch:
         self._coordinates = (x,y)
         self._foxes = []
         self._rabbits = []
-        # Inserts some random amount of grass ----> Ikke sikker på om det er 100 % korrekt, men tænker det.
-        self._grass = random.randrange(Patch.maxGrassAmout)
+        # Inserts some random amount of grass ----> Tænker vi skal have en mimimum værdi af grass (fx max greassGrowthh)
+        self._grass = random.randrange(Patch.maxGrassGrowthh,Patch.maxGrassAmout)
 
     def coordinates(self) -> Tuple[int, int]:
         """[Return coordinates of the current patch]
@@ -52,7 +52,7 @@ class Patch:
         Returns:
             bool: [If fox is alive, return True, else False.]
         """        
-        for aliveFox in self._foxes:
+        for aliveFox in self._foxes: ## vi kan kun have en fox i live på hver patch så vi tjekker ikke rigtig hele listen og lige nu giver den ikke en bool men foxes som retur
             if aliveFox.is_alive():
                 return aliveFox
 
@@ -62,11 +62,11 @@ class Patch:
         Returns:
             [bool]: [If rabbit is alive, return True, else False.]
         """        
-        for aliveRabbit in self._rabbits:
+        for aliveRabbit in self._rabbits: # samme som i foxes
             if aliveRabbit.is_alive():
                 return aliveRabbit
 
-    def animalPopulation(self, animal):
+    def _animalPopulation(self, animal):
         """[Adds an animal type to the one of the followings lists in class:Patch constructor - _foxes or _rabbtis.
         This is also used to verify whether or not an animal is alive]
 
@@ -76,21 +76,20 @@ class Patch:
         Returns:
             [List]: [description]
         """        
-        if type(animal) is Fox:
-            self.animalPopulation(animal).append(animal)
-            return self._foxes
-        else:
-            type(animal) is Rabbit
-            self.animalPopulation(animal).append(animal)
-            return self._rabbits
+        if animal in self.animals():
+            if type(animal) is Fox: 
+                self._foxes.append(animal)
+            else:
+                self._rabbits.append(animal)
+
 
     def animals(self):
         """[Validates to see if which kind of animals is on the a patch.]
 
         Returns:
-            [Integer]: [An updated list for both foxces and rabbits.]
+            [List]: [An updated list for both foxces and rabbits.]
         """        
-        return self._foxes + self._rabbits
+        return self._rabbits + self._foxes
 
     def add(self, animal):
         """[Adds an animal, either fox or rabbit to the total population.]
@@ -98,7 +97,7 @@ class Patch:
         Args:
             animal ([List]): [List of animals.]
         """        
-        self.animalPopulation(animal).append(animal)
+        self._animalPopulation(animal)
         
     def remove(self, animal):
         """[Removes an animal, can be either fox or rabbit.]
@@ -106,7 +105,11 @@ class Patch:
         Args:
             animal ([Integer]): [List of animals.]
         """        
-        self.animalPopulation(animal).remove(animal)
+        if animal in self.animals():
+            if type(animal) is Fox: 
+                self._foxes.remove(animal)
+            else:
+                self._rabbits.remove(animal)
 
 class Animal:
 
@@ -125,7 +128,7 @@ class Animal:
         """        
         return self._age
 
-    def can_eproduce(self) -> bool:
+    def can_reproduce(self) -> bool:
         """[Checks if an animal is alive and validates reproduction criterias according to parameters for minimum energy and age with a True/False.]
 
         Returns:
@@ -141,7 +144,12 @@ class Animal:
 
         Returns:
             [Integer]: [A newborn rabbit or foxes.]
-        """    
+        """
+        # Can_do = random.choices([True,False], cum_weights=[self.reproduction_probability,1], k=1)
+        
+        # if Can_do:
+        #     Animal(self._parameters, newbornPatch, age: 0)
+
         return None
 
     def energy(self) -> int:
