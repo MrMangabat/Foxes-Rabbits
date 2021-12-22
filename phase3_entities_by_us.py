@@ -5,7 +5,11 @@ import random
 
 ## Create entitites module
 class Patch:
-    
+    """[summary]
+
+    Returns:
+        [type]: [description]
+    """    
     # Class attributes for grass
     minGrassGrowth = 1
     maxGrassGrowthh = 4
@@ -118,8 +122,17 @@ class Patch:
                 self._rabbits.remove(animal)
 
 class Animal:
-
+    """[summary]
+    """
     def __init__(self, population: parameters.Population, patch: Patch, energy: int, age: int):
+        """[summary]
+
+        Args:
+            population (parameters.Population): [description]
+            patch (Patch): [description]
+            energy (int): [description]
+            age (int): [description]
+        """    
         self._parameters    = population
         self._energy        = energy
         self._age           = age
@@ -171,6 +184,7 @@ class Animal:
         """    
         if self.is_alive():
             self._age += 1
+            #
             self._energy = max(0, self._energy - self._parameters.metabolism)
             if not self.is_alive():
                 self._patch.remove(self)
@@ -238,12 +252,27 @@ class Animal:
 
 
 class Fox(Animal):
+    """[summary]
 
+    Args:
+        Animal ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     reproduction_cost_rate = 0.85
     food_energy_per_unit = 15
 
 
     def __init__(Animal, population: parameters.Population, patch: Patch, age: int):
+        """[summary]
+
+        Args:
+            Animal ([type]): [description]
+            population (parameters.Population): [description]
+            patch (Patch): [description]
+            age (int): [description]
+        """    
         # Sets the initial max energy of population rabbits to 70 % of maximum value.
         energy = round(population.max_energy * 0.7)
         ## Super is used to declare that this is a subclass from class Animals.
@@ -280,6 +309,7 @@ class Fox(Animal):
         #
         if self.can_reproduce() and \
         random.choices([True,False], cum_weights = [self._parameters.reproduction_probability,1], k = 1):
+        #
             self._energy = round(self.energy() - self._parameters.reproduction_min_energy * self.reproduction_cost_rate)
             return Fox(self._parameters, newborn_patch, 0)
         else:
@@ -299,12 +329,25 @@ class Fox(Animal):
 
 
 class Rabbit(Animal):
+    """[summary]
 
+    Args:
+        Animal ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     reproduction_cost_rate  = 0.85
     feeding_Metabolism_Rate   = 2.5
 
     def __init__(self, population: parameters.Population, patch: Patch, age: int):
-        
+        """[summary]
+
+        Args:
+            population (parameters.Population): [description]
+            patch (Patch): [description]
+            age (int): [description]
+        """        
         # Initial energy for population rabbits is set to 25 % of maximum value.
         energy = round(population.max_energy * 0.25)
 
@@ -322,7 +365,8 @@ class Rabbit(Animal):
         return self._killed
 
     def kill(self):
-
+        """[summary]
+        """        
         if self.is_alive():
             self._killed = True
             self._patch.remove(self)
@@ -335,7 +379,7 @@ class Rabbit(Animal):
         """
         return self.energy() > 0 and self.age() < self._parameters.max_age and not self.was_killed()
 
-    def same_species_in(self, patch:Patch) -> bool:
+    def same_species_in(self, patch: Patch) -> bool:
         """[Checks of there is another rabbit on the patch.]
 
         Args:
@@ -347,17 +391,25 @@ class Rabbit(Animal):
         return patch.has_alive_rabbit()
     
     def feed(self):
-
+        """[summary]
+        """        
         if self.is_alive():
             eating = self.patch()
+            #
             grass_limit = round(self.feeding_Metabolism_Rate * self._parameters.metabolism)
             for turn in range(grass_limit):
-                if eating.grass()>0 and self.energy() < self._parameters.max_energy:
+                #
+                if eating.grass() > 0 and self.energy() < self._parameters.max_energy:
                     eating._grass   -= 1
                     self._energy    += 1
 
     def reproduce(self, newborn_patch: Patch) -> Optional["Rabbit"]:
-                
+        """[summary]
+
+        Returns:
+            [type]: [description]
+        """
+        #
         if self.can_reproduce() and random.choices([True,False], cum_weights = [self._parameters.reproduction_probability, 1], k = 1):
             self._energy = round(self.energy() - self._parameters.reproduction_min_energy * self.reproduction_cost_rate)
             return Rabbit(self._parameters, newborn_patch, 0)
@@ -365,7 +417,14 @@ class Rabbit(Animal):
             return None
 
     def predators_in(self, patch: Patch) -> bool:
+        """[summary]
 
+        Args:
+            patch (Patch): [description]
+
+        Returns:
+            bool: [description]
+        """    
         return patch.has_alive_fox()
 
 
