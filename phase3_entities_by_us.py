@@ -171,13 +171,13 @@ class Animal:
         """    
         if self.is_alive():
             self._age += 1
-            self._energy = max(0,self._energy - self._parameters.metabolism)
+            self._energy = max(0, self._energy - self._parameters.metabolism)
             if not self.is_alive():
                 self._patch.remove(self)
         else:
             self._patch.remove(self) 
 
-    def move_to(self, patch:Patch):
+    def move_to(self, patch: Patch):
         """[Moves an animal from current patch to another. It checks if an animal is alive,
         if the patch is not the same patch and lastly if the animal is not of the same species.
         End of this process, it will add itself to the new patch.]
@@ -193,8 +193,16 @@ class Animal:
             # Ensures the animal is added to the new patch it is supposed to move to.
             self._patch.add(self)    
 
-    def same_species_in(self, patch:Patch) -> bool:
-        
+    def same_species_in(self, patch: Patch) -> bool:
+        """[Checks if a patch is having the same type of animal on it.]
+
+        Args:
+            patch (Patch): [Positional placement of a given patch.]
+
+        Returns:
+            bool: [True or False depending on the same species is within or not]
+        """
+        # This is works because it is being specified independently for each animal.        
         pass
 
     def predatator_in(self, patch:Patch) -> bool:
@@ -206,11 +214,14 @@ class Animal:
         Returns:
             bool: [True if a rabbit and a fox is on the same patch, False otherwise.]
         """    
+        # This is works because it is being specified independently for each animal.
         pass
 
 
     def feed(self):
-
+        """[Feeds an animal with available ressourcer on the patch. Is unique for each animal.]
+        """        
+        # This is works because it is being specified independently for each animal.
         pass
 
     def reproduce(self, newbornPatch: Patch) -> Optional["Animal"]:
@@ -222,11 +233,10 @@ class Animal:
         Returns:
             [Integer]: [A newborn rabbit or foxes.]
         """
+        # This is works because it is being specified independently for each animal.
         pass
-    
 
 
-  
 class Fox(Animal):
 
     reproduction_cost_rate = 0.85
@@ -250,24 +260,33 @@ class Fox(Animal):
         return self.energy() > 0 and self.age() < self._parameters.max_age
 
     def feed(self):
-
+        """[Feeding functionality for the fox population.]
+        """    
         animal = self._patch._rabbits
         if animal:
+            #
             animal[0].kill()
-            energy_total = self.energy()+self.food_energy_per_unit
-            self._energy=min(self._parameters.max_energy, energy_total)
+            #
+            energy_total = self.energy() + self.food_energy_per_unit
+            #
+            self._energy = min(self._parameters.max_energy, energy_total)
     
     def reproduce(self, newborn_patch: Patch) -> Optional["Fox"]:
-        
+        """[Provides a newborn fox into the simulation with respect to preconditions.]
+
+        Returns:
+            [int]: [A newborn fox]
+        """
+        #
         if self.can_reproduce() and \
-        random.choices([True,False], cum_weights=[self._parameters.reproduction_probability,1], k=1):
-            self._energy = round(self.energy()-self._parameters.reproduction_min_energy * self.reproduction_cost_rate)
+        random.choices([True,False], cum_weights = [self._parameters.reproduction_probability,1], k = 1):
+            self._energy = round(self.energy() - self._parameters.reproduction_min_energy * self.reproduction_cost_rate)
             return Fox(self._parameters, newborn_patch, 0)
         else:
             return None
 
 
-    def predators_in(self, path:Patch) -> bool:
+    def predators_in(self, path: Patch) -> bool:
         """[Foxes dont have any predators, therefore this always returns False.]
 
         Args:"
@@ -331,7 +350,7 @@ class Rabbit(Animal):
 
         if self.is_alive():
             eating = self.patch()
-            grass_limit=round(self.feeding_Metabolism_Rate * self._parameters.metabolism)
+            grass_limit = round(self.feeding_Metabolism_Rate * self._parameters.metabolism)
             for turn in range(grass_limit):
                 if eating.grass()>0 and self.energy() < self._parameters.max_energy:
                     eating._grass   -= 1
@@ -339,8 +358,8 @@ class Rabbit(Animal):
 
     def reproduce(self, newborn_patch: Patch) -> Optional["Rabbit"]:
                 
-        if self.can_reproduce() and random.choices([True,False], cum_weights=[self._parameters.reproduction_probability,1], k=1):
-            self._energy = round(self.energy()-self._parameters.reproduction_min_energy * self.reproduction_cost_rate)
+        if self.can_reproduce() and random.choices([True,False], cum_weights = [self._parameters.reproduction_probability, 1], k = 1):
+            self._energy = round(self.energy() - self._parameters.reproduction_min_energy * self.reproduction_cost_rate)
             return Rabbit(self._parameters, newborn_patch, 0)
         else:
             return None
@@ -348,6 +367,5 @@ class Rabbit(Animal):
     def predators_in(self, patch: Patch) -> bool:
 
         return patch.has_alive_fox()
-
 
 
