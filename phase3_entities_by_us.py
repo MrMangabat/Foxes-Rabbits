@@ -4,7 +4,7 @@ import random
 
 
 ## Create entitites module
-class Patch:
+class Patch: # 
     """[A class for making a patch of grass on a specifk cordinate, with the posiblity of adding foxes and rabbits to it]
 
     Returns:
@@ -18,7 +18,7 @@ class Patch:
     maxGrassGrowthh = 4
     maxGrassAmout = 30
 
-    def __init__(self, x: int, y:int):
+    def __init__(self, x: int, y:int): # UC 1
         """[This is the constructor for class Patch]
 
         Args:
@@ -31,7 +31,7 @@ class Patch:
         # Inserts some random amount of grass ----> Tænker vi skal have en mimimum værdi af grass (fx max greassGrowthh)
         self._grass = random.randrange(Patch.maxGrassGrowthh,Patch.maxGrassAmout)
 
-    def coordinates(self) -> Tuple[int, int]:
+    def coordinates(self) -> Tuple[int, int]: # UC 2 
         """[Return coordinates of the current patch]
 
         Returns:
@@ -39,7 +39,7 @@ class Patch:
         """        
         return self._coordinates
 
-    def grass(self) -> int:
+    def grass(self) -> int: # UC 3
         """[Returns current amunt of grass within a patch.]
 
         Returns:
@@ -47,7 +47,7 @@ class Patch:
         """       
         return self._grass
 
-    def tick(self):
+    def tick(self): # UC 4
         """[Making the grass grow]
         """
 
@@ -55,7 +55,7 @@ class Patch:
             grassGrowth = self._grass + random.randrange(self.minGrassGrowth, self.maxGrassGrowthh)
             self._grass = min(grassGrowth, self.maxGrassAmout)
 
-    def _has_alive_fox(self) -> bool:
+    def _has_alive_fox(self) -> bool: # UC 5 
         """[Checks the list of foxes, to see whether or not it is alive through is_alive function call]
 
         Returns:
@@ -66,7 +66,7 @@ class Patch:
         else: 
             return False
 
-    def _has_alive_rabbit(self) -> bool:
+    def _has_alive_rabbit(self) -> bool: # UC 6
         """[Checks the list of rabbits, to see whether or not it is alive through is_alive function call.]
 
         Returns:
@@ -77,9 +77,11 @@ class Patch:
         else: 
             return False
 
-    def _animalPopulation(self, animal):
-        """[Adds an animal type to the one of the followings lists in class:Patch constructor - _foxes or _rabbtis.
-        This is also used to verify whether or not an animal is alive]
+
+###################### DENNE GØR PRÆCIS DET SAMME SOM def add(self, animal):
+#### Kan ikke se hvor den bruges nogen steder?! SLET = True
+    def _animalPopulation(self, animal): # UC 7 
+        """[Adds an animal type to the one of the followings lists in class:Patch constructor - _foxes or _rabbtis.]
 
         Args:
             animal ([Integer]): [Can be either a fox or rabbit.]
@@ -93,16 +95,15 @@ class Patch:
             else:
                 self._rabbits.append(animal)
 
-
-    def animals(self):
-        """[Validates to see if which kind of animals is on the a patch.]
+    def animals(self): # UC 8
+        """[Updates animals in a list for a given patch.]
 
         Returns:
             [List]: [An updated list for both foxces and rabbits.]
         """        
         return self._rabbits + self._foxes
 
-    def add(self, animal):
+    def add(self, animal): # UC 9
         """[Adds an animal, either fox or rabbit to the total population.]
 
         Args:
@@ -114,7 +115,7 @@ class Patch:
             else:
                 self._rabbits.append(animal)
         
-    def remove(self, animal):
+    def remove(self, animal): # UC 10
         """[Removes an animal, can be either fox or rabbit.]
 
         Args:
@@ -126,20 +127,20 @@ class Patch:
             else:
                 self._rabbits.remove(animal)
 
-class Animal:
+class Animal: # 
     """[summary]
     """
     # This saves memory and secure your class so it does not get more attibuts 
     __slots__= ('_parameters','_energy','_age','_patch')
 
-    def __init__(self, population: parameters.Population, patch: Patch, energy: int, age: int):
+    def __init__(self, population: parameters.Population, patch: Patch, energy: int, age: int): # UC 11
         """[summary]
 
         Args:
-            population (parameters.Population): [description]
-            patch (Patch): [description]
-            energy (int): [description]
-            age (int): [description]
+            population (parameters.Population): [Enables access to both animal populations.]
+            patch (Patch): [Gives acces to a given patch.]
+            energy (int): [Access to default energy level for each animal]
+            age (int): [Access to age.]
         """    
         self._parameters    = population
         self._energy        = energy
@@ -147,15 +148,15 @@ class Animal:
         self._patch         = patch
         self._patch.add(self)
         
-    def age(self) -> int:
+    def age(self) -> int: # UC 12
         """[Enables the tracking of age for each individual]
 
         Returns:
-            int: [The age of each individual in for each species.]
+            int: [The age of each individual for each species.]
         """        
         return self._age
 
-    def energy(self) -> int:
+    def energy(self) -> int: # UC 13
         """[Tracking of an species energy level.]
 
         Returns:
@@ -163,7 +164,7 @@ class Animal:
         """    
         return self._energy
 
-    def patch(self) -> Patch:
+    def patch(self) -> Patch: # UC 14
         """[Enables the positioning of animals on patches.]
 
         Returns:
@@ -171,7 +172,7 @@ class Animal:
         """    
         return self._patch
 
-    def is_alive(self) -> bool:
+    def is_alive(self) -> bool: # UC 15
         """[Function that checks if a an animal is alive, if not not it return False otherwise True.]
 
         Returns:
@@ -179,7 +180,7 @@ class Animal:
         """        
         pass
 
-    def can_reproduce(self) -> bool:
+    def can_reproduce(self) -> bool: # UC 16
         """[Checks if an animal is alive and validates reproduction criterias according to parameters for minimum energy and age with a True/False.]
 
         Returns:
@@ -187,7 +188,7 @@ class Animal:
         """        
         return self.is_alive() and self.energy() >= self._parameters.reproduction_min_energy and self.age() >= self._parameters.reproduction_min_age
 
-    def tick(self):
+    def tick(self): # UC 17
         """[Accounts for one step in the simulation and ensure aging and energy consumption of animals.]
         """    
         if self.is_alive():
@@ -199,7 +200,7 @@ class Animal:
         else:
             self._patch.remove(self) 
 
-    def move_to(self, patch: Patch):
+    def move_to(self, patch: Patch): # UC 18
         """[Moves an animal from current patch to another. It checks if an animal is alive,
         if the patch is not the same patch and lastly if the animal is not of the same species.
         End of this process, it will add itself to the new patch.]
@@ -215,7 +216,7 @@ class Animal:
             # Ensures the animal is added to the new patch it is supposed to move to.
             self._patch.add(self)    
 
-    def same_species_in(self, patch: Patch) -> bool:
+    def same_species_in(self, patch: Patch) -> bool: # UC 19
         """[Checks if a patch is having the same type of animal on it.]
 
         Args:
@@ -227,7 +228,7 @@ class Animal:
         # This works because it is being specified independently for each animal.        
         pass
 
-    def predators_in(self, patch:Patch) -> bool:
+    def predators_in(self, patch:Patch) -> bool: # UC 20
         """[Checks if there is an predator on the patch. This will only be true for rabbits.]
 
         Args:
@@ -239,14 +240,13 @@ class Animal:
         # This works because it is being specified independently for each animal.
         pass
 
-
-    def feed(self):
+    def feed(self): # UC 21
         """[Feeds an animal with available ressourcer on the patch. Is unique for each animal.]
         """        
         # This works because it is being specified independently for each animal.
         pass
 
-    def reproduce(self, newbornPatch: Patch) -> Optional["Animal"]:
+    def reproduce(self, newbornPatch: Patch) -> Optional["Animal"]: # UC 22
         """[Handles the scenario when a newborn is being born into the simulation or none.]
 
         Args:
@@ -258,15 +258,14 @@ class Animal:
         # This works because it is being specified independently for each animal.
         pass
 
-
-class Fox(Animal):
-    """[summary]
+class Fox(Animal): #
+    """[Specilisation for foxes]
 
     Args:
-        Animal ([type]): [description]
+        Animal ([class]): [Super class. Fox class inherits universal methods from Animal class.]
 
     Returns:
-        [type]: [description]
+        [animals]: [Specialisations for animals, fox specific.]
     """
 
     __slots__= ()
@@ -275,7 +274,7 @@ class Fox(Animal):
     food_energy_per_unit = 15
 
 
-    def __init__(Animal, population: parameters.Population, patch: Patch, age: int):
+    def __init__(Animal, population: parameters.Population, patch: Patch, age: int): # UC 23
         """[summary]
 
         Args:
@@ -290,7 +289,7 @@ class Fox(Animal):
         # To ensure that the same goes into the subclass, we initiate the super class contructor to ensure alignment between these two.
         super().__init__(population, patch, energy, age)
 
-    def is_alive(self) -> bool:
+    def is_alive(self) -> bool: # UC 24
         """[Function that checks if a an animal is alive, if not not it return False otherwise True.]
 
         Returns:
@@ -299,7 +298,7 @@ class Fox(Animal):
 
         return self.energy() > 0 and self.age() < self._parameters.max_age
 
-    def feed(self):
+    def feed(self): # UC 25
         """[Feeding functionality for the fox population.]
         """    
         animal = self._patch._rabbits
@@ -311,23 +310,22 @@ class Fox(Animal):
             # if the total energy exceed the max energy we keep the max energy
             self._energy = min(self._parameters.max_energy, energy_total)
     
-    def reproduce(self, newborn_patch: Patch) -> Optional["Fox"]:
+    def reproduce(self, newborn_patch: Patch) -> Optional["Fox"]: # UC 26
         """[Provides a newborn fox into the simulation with respect to preconditions.]
 
         Returns:
-            [entities.Fox]: [A newborn fox]
+            [animal]: [A newborn fox.]
         """
-        # Tjeks if the fox can reproduce
+        # Checks if the fox can reproduce
         if self.can_reproduce() and \
-        random.choices([True,False], cum_weights = [self._parameters.reproduction_probability,1], k = 1):
+        random.choices([True,False], cum_weights = [self._parameters.reproduction_probability, 1], k = 1): # https://docs.python.org/3/library/random.html, see functions for sequences.
         # The energy used for reproducsen is substracted
             self._energy = round(self.energy() - self._parameters.reproduction_min_energy * self.reproduction_cost_rate)
             return Fox(self._parameters, newborn_patch, 0)
         else:
             return None
 
-
-    def predators_in(self, path: Patch) -> bool:
+    def predators_in(self, path: Patch) -> bool: # UC 27
         """[Foxes dont have any predators, therefore this always returns False.]
 
         Args:"
@@ -338,15 +336,15 @@ class Fox(Animal):
         """        
         return False
 
-
-class Rabbit(Animal):
-    """[summary]
+class Rabbit(Animal): #
+    """[Rabbit class, handles methods for rabbits. Includes validation for if it is alive, same species, predators, was killed.
+    Further, it states the rabbit can be killed, reproduce and feeding mechanism.]
 
     Args:
-        Animal ([type]): [description]
+        Animal ([class]): [Super class. Rabbit class inherits universal methods from Animal class.]
 
     Returns:
-        [type]: [description]
+        [animals]: [Rabbit specialisations.]
     """
 
     __slots__= ('_killed')
@@ -354,8 +352,8 @@ class Rabbit(Animal):
     reproduction_cost_rate  = 0.85
     feeding_Metabolism_Rate   = 2.5
 
-    def __init__(self, population: parameters.Population, patch: Patch, age: int):
-        """[summary]
+    def __init__(self, population: parameters.Population, patch: Patch, age: int): # UC 28
+        """[]
 
         Args:
             population (parameters.Population): [description]
@@ -370,7 +368,7 @@ class Rabbit(Animal):
         super().__init__(population, patch, energy, age)
         self._killed = False
     
-    def was_killed(self) -> bool:
+    def was_killed(self) -> bool: # UC 29
         """[Checks if the rabbit had an dramatic ending of their unisex life or not.]
 
         Returns:
@@ -378,14 +376,14 @@ class Rabbit(Animal):
         """    
         return self._killed
 
-    def kill(self):
-        """[Tjeks if the rabbits is alive and kills it and remove it from the patch]
+    def kill(self): # UC 30
+        """[Checks if the rabbits is alive, kills and removes it from the patch]
         """        
         if self.is_alive():
             self._killed = True
             self._patch.remove(self)
 
-    def is_alive(self):
+    def is_alive(self): # UC 31
         """[Function that checks if a an animal is alive, if not not it return False otherwise True.]
 
         Returns:
@@ -393,7 +391,7 @@ class Rabbit(Animal):
         """
         return self.energy() > 0 and self.age() < self._parameters.max_age and not self.was_killed()
 
-    def same_species_in(self, patch: Patch) -> bool:
+    def same_species_in(self, patch: Patch) -> bool: # UC 32
         """[Checks of there is another rabbit on the patch.]
 
         Args:
@@ -402,28 +400,29 @@ class Rabbit(Animal):
         Returns:
             bool: [True if there is another rabbit else False.]
         """    
+        ## Skal den ikke hedder : patch._has_alive_rabbt() ?
         return patch.has_alive_rabbit()
     
-    def feed(self):
-        """[summary]
+    def feed(self): # UC 33
+        """[Feeds  the rabbit using the amount of grass availeable on patch.]
         """        
         if self.is_alive():
             eating = self.patch()
             # Gives us how many times the rabbit can eat the grass 
             grass_limit = round(self.feeding_Metabolism_Rate * self._parameters.metabolism)
             for turn in range(grass_limit):
-                # Tjeks if there is sill grass and if the max energt it reach 
+                # Checks if there is sill grass and if the max energy is reached. 
                 if eating.grass() > 0 and self.energy() < self._parameters.max_energy:
                     eating._grass   -= 1
                     self._energy    += 1
 
-    def reproduce(self, newborn_patch: Patch) -> Optional["Rabbit"]:
-        """[summary]
+    def reproduce(self, newborn_patch: Patch) -> Optional["Rabbit"]: # UC 34
+        """[Provides a newborn rabbit into the simulation with respect to preconditions.]
 
         Returns:
-            [type]: [description]
+            [animal]: [Newborn rabbit.]
         """
-        # Tjeks if the rabbit can reproduce
+        # Checks if the rabbit can reproduce.
         if self.can_reproduce() and random.choices([True,False], cum_weights = [self._parameters.reproduction_probability, 1], k = 1):
             # The energy used for reproducsen is substracted
             self._energy = round(self.energy() - self._parameters.reproduction_min_energy * self.reproduction_cost_rate)
@@ -431,7 +430,7 @@ class Rabbit(Animal):
         else:
             return None
 
-    def predators_in(self, patch: Patch) -> bool:
+    def predators_in(self, patch: Patch) -> bool: # UC 35
         """[A function that inspected the patch for predators]
 
         Args:
@@ -440,5 +439,5 @@ class Rabbit(Animal):
         Returns:
             bool: [Ture if there is a predator, False if not]
         """    
+        #################### Burde denne ikkr hedder : patch._has_alive_fox()? 
         return patch.has_alive_fox()
-
