@@ -26,9 +26,10 @@ class Patch: #
             y (int): [Enables accesss to coordinates from north to south in the grid.]
         """    
         self._coordinates = (x,y)
-        self._foxes = []  # Det kun en vlrdi den skal indeholde så tænker ikke at lave det til en liste
+        self._foxes = []
         self._rabbits = []
-        # Inserts some random amount of grass ----> Tænker vi skal have en mimimum værdi af grass (fx max greassGrowthh)
+        
+        # Inserts some random amount of grass
         self._grass = random.randrange(Patch.maxGrassGrowthh,Patch.maxGrassAmout)
 
     def coordinates(self) -> Tuple[int, int]: # UC 2 
@@ -121,7 +122,7 @@ class Animal: #
         Args:
             population (parameters.Population): [Enables access to both animal populations.]
             patch (Patch): [Gives acces to a given patch.]
-            energy (int): [Access to default energy level for each animal]
+            energy (int): [Access to default energy level for each animal.]
             age (int): [Access to age.]
         """    
         self._parameters    = population
@@ -227,7 +228,8 @@ class Animal: #
         """        
         # This works because it is being specified independently for each animal.
         pass
-
+        
+        
     def reproduce(self, newbornPatch: Patch) -> Optional["Animal"]: # UC 21
         """[Handles the scenario when a newborn is being born into the simulation or none.]
 
@@ -250,7 +252,7 @@ class Fox(Animal): #
         [animals]: [Specialisations for animals, fox specific.]
     """
 
-    __slots__= ()
+    __slots__ = ()
 
     reproduction_cost_rate = 0.85
     food_energy_per_unit = 15
@@ -329,7 +331,7 @@ class Rabbit(Animal): #
         [animals]: [Rabbit specialisations.]
     """
 
-    __slots__= ('_killed')
+    __slots__ = ('_killed')
 
     reproduction_cost_rate  = 0.85
     feeding_Metabolism_Rate   = 2.5
