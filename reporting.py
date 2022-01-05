@@ -18,7 +18,7 @@ def print_summary(res: results.SimulationStats): # UC 35:
     print("Rabbits")    
     print(res.rabbits.dead_by_old_age)       #
     print("Foxes and Rabbits")    
-    print(res.rabbits.dead_by_old_age+res.foxes.dead_by_old_age) 
+    print(res.rabbits.dead_by_old_age + res.foxes.dead_by_old_age) 
 
     print("\n")
     print("Number of rabbits that died by predation.")
@@ -31,7 +31,7 @@ def print_summary(res: results.SimulationStats): # UC 35:
     print("Rabbits")
     print(res.rabbits.dead_by_starvation)       #
     print("Foxes and Rabbits")
-    print(res.rabbits.dead_by_starvation+res.foxes.dead_by_starvation)  
+    print(res.rabbits.dead_by_starvation + res.foxes.dead_by_starvation)  
 
     print("\n")
     print("Individuals alive and ever lived")
@@ -44,9 +44,9 @@ def print_summary(res: results.SimulationStats): # UC 35:
 
     print("\n")
     print("Number of dead animals")
-    dead_rab= res.rabbits.dead_by_old_age+res.rabbits.dead_by_starvation+res.rabbits.dead_by_predation
-    dead_fox=res.foxes.dead_by_old_age+res.foxes.dead_by_starvation
-    All_dead=dead_rab+dead_fox
+    dead_rab = res.rabbits.dead_by_old_age + res.rabbits.dead_by_starvation+res.rabbits.dead_by_predation
+    dead_fox = res.foxes.dead_by_old_age + res.foxes.dead_by_starvation
+    All_dead = dead_rab+dead_fox
     print("Foxes")
     print(dead_fox)
     print("Rabbits")
@@ -61,7 +61,7 @@ def print_summary(res: results.SimulationStats): # UC 35:
     print("Rabbits")
     print(min(res.rabbits.size_per_step))
     print("overall")
-    print(min(res.foxes.size_per_step+res.rabbits.size_per_step))
+    print(min(res.foxes.size_per_step + res.rabbits.size_per_step))
 
     print("\n")
     print("The largeste number of animals alive")
@@ -70,7 +70,7 @@ def print_summary(res: results.SimulationStats): # UC 35:
     print("Rabbits")
     print(max(res.rabbits.size_per_step))
     print("overall")
-    print(max(res.foxes.size_per_step+res.rabbits.size_per_step))
+    print(max(res.foxes.size_per_step + res.rabbits.size_per_step))
 
     print("\n")
     print("The avage number of animals alive \nOnly steps with a minimum of 1 animal alive has been used to calculate this")
@@ -78,12 +78,12 @@ def print_summary(res: results.SimulationStats): # UC 35:
 
     # Finding out when the porpulation die out
     try:
-        zero_index_fox=res.foxes.size_per_step.index(0)
+        zero_index_fox = res.foxes.size_per_step.index(0)
     except:
         zero_index_fox=-1
 
     try:
-        zero_index_rab=res.rabbits.size_per_step.index(0)
+        zero_index_rab = res.rabbits.size_per_step.index(0)
     except:
         zero_index_rab=-1
 
@@ -91,7 +91,7 @@ def print_summary(res: results.SimulationStats): # UC 35:
     print("Rabbits")
     print(floor(mean(res.rabbits.size_per_step[0:zero_index_rab])))
     print("overall")
-    print(floor(mean(res.foxes.size_per_step[0:zero_index_fox]+res.rabbits.size_per_step[0:zero_index_rab])))
+    print(floor(mean(res.foxes.size_per_step[0:zero_index_fox] + res.rabbits.size_per_step[0:zero_index_rab])))
 
     print("\n")
     print("\n")
@@ -105,17 +105,17 @@ def plot_pop_size(res: results.SimulationStats): # UC 36
     # Creating the figure and the plot
     fig1, (ax0) = plt.subplots(1, 1)
     # getting the x axes 
-    steps=list(range(len(res.foxes.size_per_step)))
+    steps = list(range(len(res.foxes.size_per_step)))
     # Getting the population size in total
-    all_pop=[a + b for a, b in zip(res.foxes.size_per_step, res.rabbits.size_per_step)]
+    all_pop = [a + b for a, b in zip(res.foxes.size_per_step, res.rabbits.size_per_step)]
     
     # plotting in the specific plot
-    ax0.plot(steps,res.foxes.size_per_step, label='Fox population')
-    ax0.plot(steps,res.rabbits.size_per_step, label='Rabbit population')
-    ax0.plot(steps,all_pop, label='Fox and rabbit population')
+    ax0.plot(steps, res.foxes.size_per_step, label ='Fox population')
+    ax0.plot(steps, res.rabbits.size_per_step, label ='Rabbit population')
+    ax0.plot(steps, all_pop, label='Fox and rabbit population')
     plt.grid(True)
     
-    ax0.legend(loc='upper right')
+    ax0.legend(loc = 'upper right')
     ax0.set_ylabel('Populations')  # Can use $[^oC]$' note the use of TeX math formatting
         
     # def plot_pop_size_bar(res: results.SimulationStats):
@@ -128,11 +128,11 @@ def plot_pop_size(res: results.SimulationStats): # UC 36
     # Making another figure and plot
     fig2, ax = plt.subplots(1,1)
     
-    ax.bar(labels,Foxes, width, label='Foxes')
+    ax.bar(labels, Foxes, width, label='Foxes')
     # making the histogram so that they are on top of eachother 
-    ax.bar(labels,Rabbits, width, bottom=Foxes,
+    ax.bar(labels, Rabbits, width, bottom = Foxes,
            label='Rabbits')
-    ax.locator_params(tight=True, nbins=4)
+    ax.locator_params(tight = True, nbins=4)
     ax.set_ylabel('Population')
     ax.set_title('Population by animale race')
     ax.legend()
@@ -154,9 +154,9 @@ def plot_kills(res: results.SimulationStats): # UC 37
     # Getting the maximum value
     top = max([max(i) for i in image]) 
     
-    ax.imshow(image, cmap=plt.cm.Reds)
-    psm = ax.pcolormesh(image, cmap=plt.cm.Reds, rasterized=True, vmin=0, vmax=top)
-    fig.colorbar(psm, ax=ax)
+    ax.imshow(image, cmap = plt.cm.Reds)
+    psm = ax.pcolormesh(image, cmap = plt.cm.Reds, rasterized = True, vmin = 0, vmax = top)
+    fig.colorbar(psm, ax = ax)
     
     
     ax.set_title('Kill grid')
@@ -189,12 +189,12 @@ def plot_energy(res: results.SimulationStats): # UC 38
     Rabbits     = res.rabbits.avg_energy_per_step
     Both        = res.avg_energy_per_step
     
-    ax0.plot(steps,Foxes, label='Fox: Average energy')
-    ax0.plot(steps,Rabbits, label='Rabbit: Average energy')
-    ax0.plot(steps,Both, label='Fox and rabbit: average energy')
+    ax0.plot(steps,Foxes, label = 'Fox: Average energy')
+    ax0.plot(steps,Rabbits, label = 'Rabbit: Average energy')
+    ax0.plot(steps,Both, label = 'Fox and rabbit: average energy')
     plt.grid(True)
     
-    ax0.legend(loc='upper right')
+    ax0.legend(loc = 'upper right')
     ax0.set_ylabel('average energy')  
     fig1.tight_layout()
     
@@ -202,11 +202,11 @@ def plot_energy(res: results.SimulationStats): # UC 38
     width = 1  # the width of the bars
     
     fig2, (ax0,ax1,ax2) = plt.subplots(1,3)
-    ax0.bar(x, Foxes, width, label='Foxes')
-    ax1.bar(x, Rabbits, width, label='Rabbits')
-    ax2.bar(x, Both, width, label='Both')
+    ax0.bar(x, Foxes, width, label = 'Foxes')
+    ax1.bar(x, Rabbits, width, label = 'Rabbits')
+    ax2.bar(x, Both, width, label = 'Both')
     
-    for i, a in zip([ax0,ax1,ax2],["Foxes","Rabbits", "Both"]):
+    for i, a in zip([ax0,ax1,ax2],["Foxes", "Rabbits", "Both"]):
     # Add some text for labels, title and custom x-axis tick labels, etc.
         i.set_ylabel('avage energy')
         i.set_title(a)
@@ -255,7 +255,7 @@ def plot_lifespan(res: results.SimulationStats): # UC 39
 
     # For the plot with dead by old age. 
     for i,ax, a_title in zip([Foxes, Rabbits, Both],[ax00,ax01,ax02],["Foxes", "Rabbits","Both"]):
-        limitter= [0,max(i)]
+        limitter = [0,max(i)]
         n, bins, patches = ax.hist(i, max(i), facecolor='g',range = limitter)
     
         ax.set_xlabel("age") 
